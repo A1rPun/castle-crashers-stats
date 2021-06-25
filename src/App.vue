@@ -132,9 +132,9 @@ b u = use item (arrow)</pre
       </div>
       <h3>Stats total</h3>
       <div>Strength: {{ totalStrength }}</div>
-      <div>Magic: {{ totalMagic }}</div>
-      <div>Defense: {{ totalDefense }}</div>
-      <div>Agility: {{ totalAgility }}</div>
+      <div><s>Magic: {{ totalMagic }}</s></div>
+      <div><s>Defense: {{ totalDefense }}</s></div>
+      <div><s>Agility: {{ totalAgility }}</s></div>
       <h3>Damage</h3>
       <div class="normalattack">Normal attack damage: {{ normalDamage }}</div>
       <div class="heavyattack">Heavy attack damage: {{ heavyDamage }}</div>
@@ -165,13 +165,13 @@ export default {
       return (this.weapon.strength ?? 0) + (this.pet.strength ?? 0) + this.level * 0.1;
     },
     extraMagic() {
-      return (this.weapon.magic ?? 0) + (this.pet.magic ?? 0) + this.level * 0.1;
+      return (this.weapon.magic ?? 0) + (this.pet.magic ?? 0); // + this.level * 0.1;
     },
     extraDefense() {
-      return (this.weapon.defense ?? 0) + (this.pet.defense ?? 0) + this.level * 0.1;
+      return (this.weapon.defense ?? 0) + (this.pet.defense ?? 0); // + this.level * 0.1;
     },
     extraAgility() {
-      return (this.weapon.agiity ?? 0) + (this.pet.agiity ?? 0) + this.level * 0.1;
+      return (this.weapon.agiity ?? 0) + (this.pet.agiity ?? 0); // + this.level * 0.1;
     },
     totalStrength() {
       return Math.floor(this.strength + this.extraStrength);
