@@ -34,16 +34,16 @@
           <input type="radio" v-model="numPlayers" :value="1" @change="updateStats" />
         </label>
         <label>
-          <s>2p</s>
-          <input type="radio" v-model="numPlayers" :value="2" @change="updateStats" disabled />
+          <span>2p</span>
+          <input type="radio" v-model="numPlayers" :value="2" @change="updateStats" />
         </label>
         <label>
-          <s>3p</s>
-          <input type="radio" v-model="numPlayers" :value="3" @change="updateStats" disabled />
+          <span>3p</span>
+          <input type="radio" v-model="numPlayers" :value="3" @change="updateStats" />
         </label>
         <label>
-          <s>4p</s>
-          <input type="radio" v-model="numPlayers" :value="4" @change="updateStats" disabled />
+          <span>4p</span>
+          <input type="radio" v-model="numPlayers" :value="4" @change="updateStats" />
         </label>
       </div>
       <div class="stats">
@@ -281,7 +281,7 @@ export default {
       this.throwDamage = this.calcDamage(this.throwAttack);
       const damage = this.calcDamage(this.normalAttack);
       this.normalDamage = damage;
-      this.output = ccrstats(damage, this.isNormal);
+      this.output = ccrstats(damage, this.isNormal, this.numPlayers);
       this.calcCombo();
     },
   },
