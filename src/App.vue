@@ -243,7 +243,7 @@ export default {
       return Math.round((2 * (1 - this.resistance / 100)).toFixed(2) * 100);
     },
     runSpeed() {
-      return Math.min(1 * (1 + this.totalAgility * 0.02), 1.5);
+      return Math.min(1 * (1 + this.totalAgility * 0.02), 1.5).toFixed(2);
     },
   },
   data() {
