@@ -256,6 +256,10 @@ body {
   font-size: 16px;
 }
 
+* {
+  cursor: url(assets/NG_Gold_Sword.png), auto;
+}
+
 .container {
   display: flex;
 }
