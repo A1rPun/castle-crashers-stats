@@ -138,22 +138,25 @@ b u = use item (arrow)</pre
       </div>
       <h3>Stats total</h3>
       <div>Strength: {{ totalStrength }}</div>
-      <div>
-        <s>Magic: {{ totalMagic }}</s>
-      </div>
+      <div>Magic: {{ totalMagic }}</div>
       <div>Defense: {{ totalDefense }}</div>
       <div>Agility: {{ totalAgility }}</div>
       <h3>Damage</h3>
       <div>Normal attack damage: {{ normalDamage }}</div>
       <div>Heavy attack damage: {{ heavyDamage }}</div>
       <div>Throw damage: {{ throwDamage }}</div>
+      <div>Splash magic damage: {{ splashDamage }}</div>
+      <div v-if="magic >= 10">Projectile/Jump magic damage: {{ magicDamage }}</div>
+      <div v-if="magic >= 15">
+        Elemental infusion damage: {{ infusionDamage }} or {{ infusionDamage * 2 }} piercing
+      </div>
       <div>Arrow damage: {{ arrowDamage }}</div>
+      <div>Bomb damage: {{ bombDamage }}</div>
       <h3>Defense</h3>
       <div>Health: {{ health }}</div>
       <div>Resistance: {{ resistance }}</div>
       <div>Damage taken: {{ damageTaken }}%</div>
       <div>Run speed: x{{ runSpeed }}</div>
-      <!-- <div class="magicattack">Magic attack damage: {{ magicDamage }}</div> -->
       <!-- {{ comboDamage }} -->
       <h3>Enemy hits</h3>
       <div class="CCR">{{ output }}</div>
@@ -179,25 +182,25 @@ export default {
       return (this.weapon.strength ?? 0) + (this.pet.strength ?? 0) + this.level * 0.1;
     },
     extraMagic() {
-      return (this.weapon.magic ?? 0) + (this.pet.magic ?? 0); // + this.level * 0.1;
+      return (this.weapon.magic ?? 0) + (this.pet.magic ?? 0);
     },
     extraDefense() {
-      return (this.weapon.defense ?? 0) + (this.pet.defense ?? 0); // + this.level * 0.1;
+      return (this.weapon.defense ?? 0) + (this.pet.defense ?? 0);
     },
     extraAgility() {
-      return (this.weapon.agility ?? 0) + (this.pet.agility ?? 0); // + this.level * 0.1;
+      return (this.weapon.agility ?? 0) + (this.pet.agility ?? 0);
     },
     totalStrength() {
-      return Math.floor(this.strength + this.extraStrength);
+      return Math.max(Math.floor(this.strength + this.extraStrength), 1);
     },
     totalMagic() {
-      return Math.floor(this.magic + this.extraMagic);
+      return Math.max(Math.floor(this.magic + this.extraMagic + this.level * 0.1), 1);
     },
     totalDefense() {
-      return Math.floor(this.defense + this.extraDefense);
+      return Math.max(Math.floor(this.defense + this.extraDefense), 1);
     },
     totalAgility() {
-      return Math.floor(this.agility + this.extraAgility);
+      return Math.max(Math.floor(this.agility + this.extraAgility), 1);
     },
     normalAttack() {
       return this.strength + basestats.normal;
@@ -208,8 +211,20 @@ export default {
     throwAttack() {
       return this.strength * 1.2 + basestats.throw;
     },
+    magicDamage() {
+      return Math.floor(Math.max(this.magic + this.extraMagic, 1) * 2 + this.level * 0.1);
+    },
+    splashDamage() {
+      return Math.ceil(this.magicDamage * 0.5);
+    },
+    infusionDamage() {
+      return this.normalDamage + this.magicDamage;
+    },
     arrowDamage() {
       return 2 + this.totalAgility;
+    },
+    bombDamage() {
+      return (this.magicDamage < this.throwDamage ? this.throwDamage : this.magicDamage) * 2;
     },
     spendStatPoints() {
       return this.strength + this.magic + this.defense + this.agility - 4;
@@ -227,7 +242,7 @@ export default {
       return Math.round((2 * (1 - this.resistance / 100)).toFixed(2) * 100);
     },
     runSpeed() {
-      return Math.min(1 * (1 + (this.totalAgility * 0.02)), 1.5);
+      return Math.min(1 * (1 + this.totalAgility * 0.02), 1.5);
     },
   },
   data() {
@@ -248,7 +263,6 @@ export default {
       normalDamage: 0,
       heavyDamage: 0,
       throwDamage: 0,
-      magicDamage: 0,
       comboDamage: 0,
       output: '',
       doCrit: false,
@@ -271,9 +285,19 @@ export default {
     },
   },
   mounted() {
-    this.weapon = weapons.find(x => x.name === 'Broad Axe');
-    this.pet = pets.find(x => x.name === 'Hawkster');
+    this.weapon = weapons.find(x => x.name === 'Mace');
+    this.pet = pets.find(x => x.name === 'No Pet');
     this.updateStats();
+    // arena
+    // level 30
+    // 1000 health
+    // 20 strength
+    // 26 base melee
+    // 20 magic
+    // 43 base magic
+    // 30 defense
+    // resistance 55
+    // 7.5 agility
   },
 };
 </script>

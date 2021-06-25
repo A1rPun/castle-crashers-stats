@@ -1,5 +1,8 @@
 export default [
   {
+    name: 'No Pet',
+  },
+  {
     name: 'Beholder',
     magic: 4,
     ccMagic: 2,
