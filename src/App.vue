@@ -114,10 +114,11 @@
         <div>
           <input type="text" v-model="combo" disabled />
           <pre>
-x l = light attack
-y h = heavy attack
-a j = jump
-b u = use item (arrow)</pre
+x  l = light attack
+y  h = heavy attack
+a  j = jump
+b  u = use item (arrow)
+rt m = magic</pre
           >
         </div>
       </div>
@@ -288,16 +289,6 @@ export default {
     this.weapon = weapons.find(x => x.name === 'Mace');
     this.pet = pets.find(x => x.name === 'No Pet');
     this.updateStats();
-    // arena
-    // level 30
-    // 1000 health
-    // 20 strength
-    // 26 base melee
-    // 20 magic
-    // 43 base magic
-    // 30 defense
-    // resistance 55
-    // 7.5 agility
   },
 };
 </script>

@@ -8,3 +8,25 @@
 - arena
 - 7 dmg slam?
 - combo input
+
+```
+// arena
+// level 30
+// 1000 health
+// 20 strength
+// 26 base melee
+// 20 magic
+// 43 base magic
+// 30 defense
+// resistance 55
+// 7.5 agility
+
+{
+  "Enemy": "Bear Boss",
+  "Insane1p": 2150,
+  "Insane2p": 2700,
+  "Insane3p": 3250,
+  "Insane4p": 3800,
+  "resistance": {}
+},
+```
