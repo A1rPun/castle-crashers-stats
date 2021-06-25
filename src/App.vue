@@ -90,6 +90,12 @@
         <span v-if="weapon.defense">defense:{{ weapon.defense }}</span>
         <span v-if="weapon.agility">agility:{{ weapon.agility }}</span>
         <span v-if="weapon.crit">crit:{{ weapon.crit }}%</span>
+        <div v-if="weapon.crit !== undefined">
+          <label>
+            <input type="checkbox" v-model="doCrit" />
+            <span>Apply 100% critical damage with this weapon</span>
+          </label>
+        </div>
       </div>
       <div>
         <h3>Pet</h3>
@@ -132,13 +138,21 @@ b u = use item (arrow)</pre
       </div>
       <h3>Stats total</h3>
       <div>Strength: {{ totalStrength }}</div>
-      <div><s>Magic: {{ totalMagic }}</s></div>
-      <div><s>Defense: {{ totalDefense }}</s></div>
-      <div><s>Agility: {{ totalAgility }}</s></div>
+      <div>
+        <s>Magic: {{ totalMagic }}</s>
+      </div>
+      <div>Defense: {{ totalDefense }}</div>
+      <div>Agility: {{ totalAgility }}</div>
       <h3>Damage</h3>
-      <div class="normalattack">Normal attack damage: {{ normalDamage }}</div>
-      <div class="heavyattack">Heavy attack damage: {{ heavyDamage }}</div>
-      <div class="heavyattack">Throw damage: {{ throwDamage }}</div>
+      <div>Normal attack damage: {{ normalDamage }}</div>
+      <div>Heavy attack damage: {{ heavyDamage }}</div>
+      <div>Throw damage: {{ throwDamage }}</div>
+      <div>Arrow damage: {{ arrowDamage }}</div>
+      <h3>Defense</h3>
+      <div>Health: {{ health }}</div>
+      <div>Resistance: {{ resistance }}</div>
+      <div>Damage taken: {{ damageTaken }}%</div>
+      <div>Run speed: x{{ runSpeed }}</div>
       <!-- <div class="magicattack">Magic attack damage: {{ magicDamage }}</div> -->
       <!-- {{ comboDamage }} -->
       <h3>Enemy hits</h3>
@@ -171,7 +185,7 @@ export default {
       return (this.weapon.defense ?? 0) + (this.pet.defense ?? 0); // + this.level * 0.1;
     },
     extraAgility() {
-      return (this.weapon.agiity ?? 0) + (this.pet.agiity ?? 0); // + this.level * 0.1;
+      return (this.weapon.agility ?? 0) + (this.pet.agility ?? 0); // + this.level * 0.1;
     },
     totalStrength() {
       return Math.floor(this.strength + this.extraStrength);
@@ -194,11 +208,26 @@ export default {
     throwAttack() {
       return this.strength * 1.2 + basestats.throw;
     },
+    arrowDamage() {
+      return 2 + this.totalAgility;
+    },
     spendStatPoints() {
       return this.strength + this.magic + this.defense + this.agility - 4;
     },
     totalStatPoints() {
       return this.level >= 20 ? 38 + (Math.min(this.level, 78) - 20) : (this.level - 1) * 2;
+    },
+    health() {
+      return 100 + 3 * (this.level - 1) + 28 * (this.totalDefense - 1);
+    },
+    resistance() {
+      return 40.5 + 0.5 * (this.totalDefense - 1);
+    },
+    damageTaken() {
+      return Math.round((2 * (1 - this.resistance / 100)).toFixed(2) * 100);
+    },
+    runSpeed() {
+      return Math.min(1 * (1 + (this.totalAgility * 0.02)), 1.5);
     },
   },
   data() {
@@ -206,8 +235,8 @@ export default {
       OG: false,
       isNormal: false,
       numPlayers: 1,
-      level: 99,
-      strength: 25,
+      level: 1,
+      strength: 1,
       magic: 1,
       defense: 1,
       agility: 1,
@@ -222,6 +251,7 @@ export default {
       magicDamage: 0,
       comboDamage: 0,
       output: '',
+      doCrit: false,
     };
   },
   methods: {
@@ -241,8 +271,8 @@ export default {
     },
   },
   mounted() {
-    this.weapon = weapons.find(x => x.name === 'Man Catcher');
-    this.pet = pets.find(x => x.name === 'Snoot');
+    this.weapon = weapons.find(x => x.name === 'Broad Axe');
+    this.pet = pets.find(x => x.name === 'Hawkster');
     this.updateStats();
   },
 };
@@ -267,6 +297,8 @@ body {
 .input {
   flex: 1;
   padding: 0 32px;
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
 .output {
