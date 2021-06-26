@@ -92,8 +92,8 @@
         <span v-if="weapon.crit">crit:{{ weapon.crit }}%</span>
         <div v-if="weapon.crit !== undefined">
           <label>
-            <input type="checkbox" v-model="doCrit" />
-            <span>Apply 100% critical damage with this weapon</span>
+            <input type="checkbox" v-model="doCrit" @change="updateStats" />
+            <span>Enemy gets hit with 100% critical strikes</span>
           </label>
         </div>
       </div>
@@ -249,11 +249,11 @@ export default {
   data() {
     return {
       OG: false,
-      isNormal: false,
+      isNormal: true,
       numPlayers: 1,
-      level: 1,
+      level: 8,
       strength: 1,
-      magic: 1,
+      magic: 15,
       defense: 1,
       agility: 1,
       combo: 'x',
@@ -267,6 +267,7 @@ export default {
       comboDamage: 0,
       output: '',
       doCrit: false,
+      critMultiplier: 4,
     };
   },
   methods: {
@@ -274,9 +275,10 @@ export default {
       this.comboDamage = 0;
     },
     calcDamage: function (baseAttack) {
-      return Math.floor(baseAttack + this.extraStrength);
+      return Math.floor(baseAttack + this.extraStrength) * (this.doCrit ? this.critMultiplier : 1);
     },
     updateStats() {
+      if (!this.weapon?.crit) this.doCrit = false;
       this.heavyDamage = this.calcDamage(this.heavyAttack);
       this.throwDamage = this.calcDamage(this.throwAttack);
       const damage = this.calcDamage(this.normalAttack);
@@ -318,6 +320,7 @@ body {
 
 .output {
   flex: 1;
+  padding: 0 32px;
   max-height: 100vh;
   overflow-y: auto;
 }

@@ -8,6 +8,11 @@
 - arena
 - 7 dmg slam?
 - combo input
+- crit
+- fix skeleton data
+- fix bear boss data
+- add necromancer enemies
+- mobile layout
 
 ```
 // arena
@@ -27,6 +32,5 @@
   "Insane2p": 2700,
   "Insane3p": 3250,
   "Insane4p": 3800,
-  "resistance": {}
 },
 ```
