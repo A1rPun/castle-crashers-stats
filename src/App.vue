@@ -1,18 +1,17 @@
 <template>
   <div class="container">
     <div class="input">
-      <h1>Castle Crashers Remastered</h1>
-      <!-- <div class="game">
+      <div class="game">
         <h3>Game</h3>
         <label>
           <span>Castle Crashers Remastered</span>
-          <input type="radio" v-model="OG" :value="false" checked @change="updateStats" />
+          <input type="radio" v-model="OG" :value="false" @change="updateStats" />
         </label>
         <label>
-          <s>Castle Crashers</s>
-          <input type="radio" v-model="OG" :value="true" @change="updateStats" disabled />
+          <span> Castle Crashers</span>
+          <input type="radio" v-model="OG" :value="true" @change="updateStats" />
         </label>
-      </div> -->
+      </div>
       <div class="modes">
         <h3>Mode</h3>
         <label>
@@ -86,12 +85,12 @@
             {{ w.name }}
           </option>
         </select>
-        <span v-if="weapon.strength">strength:{{ weapon.strength }}</span>
-        <span v-if="weapon.magic">magic:{{ weapon.magic }}</span>
-        <span v-if="weapon.defense">defense:{{ weapon.defense }}</span>
-        <span v-if="weapon.agility">agility:{{ weapon.agility }}</span>
-        <span v-if="weapon.crit">crit:{{ weapon.crit }}%</span>
-        <div v-if="weapon.crit !== undefined">
+        <span v-if="weaponStrength">strength:{{ weaponStrength }}</span>
+        <span v-if="weaponMagic">magic:{{ weaponMagic }}</span>
+        <span v-if="weaponDefense">defense:{{ weaponDefense }}</span>
+        <span v-if="weaponAgility">agility:{{ weaponAgility }}</span>
+        <span v-if="weaponCrit">crit:{{ weaponCrit }}%</span>
+        <div v-if="weaponCrit">
           <label>
             <input type="checkbox" v-model="doCrit" @change="updateStats" />
             <span>Enemy gets hit with 100% critical strikes</span>
@@ -105,10 +104,10 @@
             {{ p.name }}
           </option>
         </select>
-        <span v-if="pet.strength">strength:{{ pet.strength }}</span>
-        <span v-if="pet.magic">magic:{{ pet.magic }}</span>
-        <span v-if="pet.defense">defense:{{ pet.defense }}</span>
-        <span v-if="pet.agility">agility:{{ pet.agility }}</span>
+        <span v-if="petStrength">strength:{{ petStrength }}</span>
+        <span v-if="petMagic">magic:{{ petMagic }}</span>
+        <span v-if="petDefense">defense:{{ petDefense }}</span>
+        <span v-if="petAgility">agility:{{ petAgility }}</span>
       </div>
       <div>
         <h3>Combo (🧪 experimental)</h3>
@@ -223,21 +222,46 @@ export default {
     StatBar,
   },
   computed: {
-    extraStrength() {
+    weaponStrength() {
       return (
-        (this.weapon.strength ?? 0) +
-        (this.pet.strength ?? 0) +
-        (this.mode === 3 ? 30 : this.level) * 0.1
+        (this.OG ? this.weapon?.ccStrength ?? this.weapon?.strength : this.weapon?.strength) ?? 0
       );
     },
+    weaponMagic() {
+      return (this.OG ? this.weapon?.ccMagic ?? this.weapon?.magic : this.weapon?.magic) ?? 0;
+    },
+    weaponDefense() {
+      return (this.OG ? this.weapon?.ccDefense ?? this.weapon?.defense : this.weapon?.defense) ?? 0;
+    },
+    weaponAgility() {
+      return (this.OG ? this.weapon?.ccAgility ?? this.weapon?.agility : this.weapon?.agility) ?? 0;
+    },
+    weaponCrit() {
+      return (this.OG ? this.weapon?.ccCrit ?? this.weapon?.crit : this.weapon?.crit) ?? 0;
+    },
+    petStrength() {
+      return (this.OG ? this.pet?.ccStrength ?? this.pet?.strength : this.pet?.strength) ?? 0;
+    },
+    petMagic() {
+      return (this.OG ? this.pet?.ccMagic ?? this.pet?.magic : this.pet?.magic) ?? 0;
+    },
+    petDefense() {
+      return (this.OG ? this.pet?.ccDefense ?? this.pet?.defense : this.pet?.defense) ?? 0;
+    },
+    petAgility() {
+      return (this.OG ? this.pet?.ccAgility ?? this.pet?.agility : this.pet?.agility) ?? 0;
+    },
+    extraStrength() {
+      return this.weaponStrength + this.petStrength + (this.mode === 3 ? 30 : this.level) * 0.1;
+    },
     extraMagic() {
-      return (this.weapon.magic ?? 0) + (this.pet.magic ?? 0);
+      return this.weaponMagic + this.petMagic;
     },
     extraDefense() {
-      return (this.weapon.defense ?? 0) + (this.pet.defense ?? 0);
+      return this.weaponDefense + this.petDefense;
     },
     extraAgility() {
-      return (this.weapon.agility ?? 0) + (this.pet.agility ?? 0);
+      return this.weaponAgility + this.petAgility;
     },
     totalStrength() {
       return Math.max(Math.floor((this.mode === 3 ? 20 : this.strength) + this.extraStrength), 1);
@@ -346,6 +370,8 @@ export default {
     getUrlOptions() {
       const urlParams = new URLSearchParams(window.location.search);
 
+      const og = urlParams.get('OG');
+      if (og) this.OG = true;
       const mode = urlParams.get('mode');
       if (mode) this.mode = parseInt(mode, 10);
       const num = urlParams.get('players');
@@ -369,6 +395,7 @@ export default {
     },
     setUrloptions() {
       const urlParams = new URLSearchParams();
+      if (this.OG) urlParams.set('OG', this.OG);
       if (this.mode > 1) urlParams.set('mode', this.mode);
       if (this.numPlayers > 1) urlParams.set('players', this.numPlayers);
       if (this.level > 1) urlParams.set('lvl', this.level);
@@ -379,7 +406,6 @@ export default {
       if (this.weapon?.name !== 'Alien Gun') urlParams.set('weap', this.weapon.name);
       if (this.pet?.name !== 'None') urlParams.set('orb', this.pet.name);
       if (this.combo !== 'a xyy') urlParams.set('combo', this.combo);
-      console.log(urlParams.toString());
       window.history.replaceState(
         {},
         '',
