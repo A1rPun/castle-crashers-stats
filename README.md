@@ -6,12 +6,13 @@
 
 - fix TODOS in code
 - OG CC
-- combo input
 - fix skeleton data
 - fix bear boss data
 - add necromancer enemies
 - mobile layout
 - share setup (via url)
+- more pets
+- [more weapons](https://castlecrashers.fandom.com/wiki/Weapons)
 - [formulas](https://gamefaqs.gamespot.com/xbox360/934458-castle-crashers/faqs/54118)
 
 ```

@@ -111,9 +111,9 @@
         <span v-if="pet.agility">agility:{{ pet.agility }}</span>
       </div>
       <div>
-        <h3>Combo</h3>
+        <h3>Combo (🧪 experimental)</h3>
         <div>
-          <input type="text" v-model="combo" disabled />
+          <input type="text" v-model="combo" @change="updateStats" />
           <pre>
 x  l = light attack
 y  h = heavy attack
@@ -158,12 +158,12 @@ rt m = magic</pre
       </div>
       <div>Arrow damage: {{ arrowDamage }}</div>
       <div v-if="this.mode < 3">Bomb damage: {{ bombDamage }}</div>
+      <div>🧪 Combo damage: {{ comboDamage.reduce((prev, cur) => prev + cur) }}</div>
       <h3>Defense</h3>
       <div>Health: {{ health }}</div>
       <div>Resistance: {{ resistance }}</div>
       <div>Damage taken: {{ damageTaken }}%</div>
       <div>Run speed: x{{ runSpeed }}</div>
-      <!-- {{ comboDamage }} -->
       <h3>Enemy hits</h3>
       <div class="CCR">{{ output }}</div>
       <div class="CC"></div>
@@ -179,6 +179,7 @@ import weapons from './assets/weapons.js';
 import pets from './assets/pets.js';
 import calculateHits from './scripts/calculateHits.js';
 import calculateDamage from './scripts/calculateDamage.js';
+import parseCombo from './scripts/parseCombo.js';
 
 export default {
   name: 'CCStats',
@@ -187,7 +188,11 @@ export default {
   },
   computed: {
     extraStrength() {
-      return (this.weapon.strength ?? 0) + (this.pet.strength ?? 0) + (this.mode === 3 ? 30 : this.level) * 0.1;
+      return (
+        (this.weapon.strength ?? 0) +
+        (this.pet.strength ?? 0) +
+        (this.mode === 3 ? 30 : this.level) * 0.1
+      );
     },
     extraMagic() {
       return (this.weapon.magic ?? 0) + (this.pet.magic ?? 0);
@@ -202,7 +207,14 @@ export default {
       return Math.max(Math.floor((this.mode === 3 ? 20 : this.strength) + this.extraStrength), 1);
     },
     totalMagic() {
-      return Math.max(Math.floor((this.mode === 3 ? 20 : this.magic) + this.extraMagic + (this.mode === 3 ? 30 : this.level) * 0.1), 1);
+      return Math.max(
+        Math.floor(
+          (this.mode === 3 ? 20 : this.magic) +
+            this.extraMagic +
+            (this.mode === 3 ? 30 : this.level) * 0.1
+        ),
+        1
+      );
     },
     totalDefense() {
       return Math.max(Math.floor((this.mode === 3 ? 30 : this.defense) + this.extraDefense), 1);
@@ -220,7 +232,10 @@ export default {
       return (this.mode === 3 ? 20 : this.strength) * 1.2 + basestats.throw;
     },
     magicDamage() {
-      return Math.floor(Math.max((this.mode === 3 ? 20 : this.magic) + this.extraMagic, 1) * 2 + (this.mode === 3 ? 30 : this.level) * 0.1);
+      return Math.floor(
+        Math.max((this.mode === 3 ? 20 : this.magic) + this.extraMagic, 1) * 2 +
+          (this.mode === 3 ? 30 : this.level) * 0.1
+      );
     },
     splashDamage() {
       return Math.ceil(this.magicDamage * 0.5);
@@ -266,7 +281,7 @@ export default {
       magic: 15,
       defense: 1,
       agility: 1,
-      combo: 'x',
+      combo: 'rta xyy xyy xy xyy xy xy xy',
       weapon: {},
       weapons,
       pet: {},
@@ -274,8 +289,6 @@ export default {
       normalDamage: 0,
       heavyDamage: 0,
       throwDamage: 0,
-      // TODO: spinDamage: 1,
-      // TODO: fallDamage: 7,
       comboDamage: 0,
       output: '',
       doCrit: false,
@@ -283,11 +296,14 @@ export default {
     };
   },
   methods: {
-    calcCombo() {
-      this.comboDamage = 0;
-    },
     calcDamage: function (baseAttack) {
       return Math.floor(baseAttack + this.extraStrength) * (this.doCrit ? this.critMultiplier : 1);
+    },
+    calcArenaHits: function (baseDamage) {
+      return Math.round(calculateHits(1000, -10, baseDamage));
+    },
+    calcArenaDamage: function (baseDamage) {
+      return Math.round(calculateDamage(-10, baseDamage));
     },
     updateStats() {
       if (!this.weapon?.crit) this.doCrit = false;
@@ -295,17 +311,25 @@ export default {
       this.throwDamage = this.calcDamage(this.throwAttack);
       const damage = this.calcDamage(this.normalAttack);
       this.normalDamage = damage;
+      this.comboDamage = parseCombo(
+        this.combo,
+        this.normalDamage,
+        this.heavyDamage,
+        this.magicDamage,
+        this.splashDamage,
+        this.infusionDamage,
+        this.arrowDamage
+      );
       if (this.mode < 3) this.output = ccrstats(damage, this.mode === 1, this.numPlayers);
-      else
-        this.output = `Arena player in ${Math.round(
-          calculateHits(1000, -10, this.normalDamage)
-        )} hits
-${Math.round(calculateDamage(-10, this.normalDamage))} normal damage
-${Math.round(calculateDamage(-10, this.heavyDamage))} heavy damage
-${Math.round(calculateDamage(-10, this.throwDamage))} throw damage
+      else {
+        this.output = `Arena player in ${this.calcArenaHits(this.normalDamage)} hits
+${this.calcArenaDamage(this.normalDamage)} normal damage
+${this.calcArenaDamage(this.heavyDamage)} heavy damage
+${this.calcArenaDamage(this.throwDamage)} throw damage
 ${Math.floor(calculateDamage(-10, this.splashDamage))} splash magic damage
-${Math.round(calculateDamage(-10, this.magicDamage))} projectile/jump magic damage`;
-      this.calcCombo();
+${this.calcArenaDamage(this.magicDamage)} projectile/jump magic damage
+🧪 ${this.comboDamage.reduce((acc, cur) => acc + this.calcArenaDamage(cur), 0)} combo damage with ${this.comboDamage.length} hits`;
+      }
     },
   },
   mounted() {
