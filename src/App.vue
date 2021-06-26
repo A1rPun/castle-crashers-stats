@@ -79,7 +79,7 @@
           <StatBar v-model="agility" @change="updateStats"></StatBar>
         </div>
       </div>
-      <div>
+      <div class="weapons">
         <h3>Weapon</h3>
         <select v-model="weapon" @change="updateStats">
           <option v-for="w in weapons" :value="w" :key="w.name">
@@ -98,7 +98,7 @@
           </label>
         </div>
       </div>
-      <div>
+      <div class="pets">
         <h3>Pet</h3>
         <select v-model="pet" @change="updateStats">
           <option v-for="p in pets" :value="p" :key="p.name">
@@ -130,40 +130,74 @@ rt m = magic</pre
           {{ weapon.name }} has a level requirement of <strong>{{ weapon.level }}</strong>
         </div>
         <div v-if="spendStatPoints < totalStatPoints">
-          <strong>{{ totalStatPoints - spendStatPoints }}</strong> unspend stat points based on level {{ level }} ({{
-            totalStatPoints
-          }}
+          <strong>{{ totalStatPoints - spendStatPoints }}</strong> unspend stat points based on
+          level {{ level }} ({{ totalStatPoints }}
           points)
         </div>
         <div v-if="spendStatPoints > totalStatPoints">
-          spend <strong>{{ spendStatPoints - totalStatPoints }}</strong> stat points too much based on level
-          {{ level }} ({{ totalStatPoints }} points)
+          spend <strong>{{ spendStatPoints - totalStatPoints }}</strong> stat points too much based
+          on level {{ level }} ({{ totalStatPoints }} points)
         </div>
       </div>
       <h3>Stats total</h3>
-      <div v-if="this.mode < 3">Exp: <strong>{{ experience }}</strong></div>
-      <div v-else>Level: <strong>30</strong></div>
-      <div>Strength: <strong>{{ totalStrength }}</strong></div>
-      <div>Magic: <strong>{{ totalMagic }}</strong></div>
-      <div>Defense: <strong>{{ totalDefense }}</strong></div>
-      <div>Agility: <strong>{{ totalAgility }}</strong></div>
-      <h3>Damage</h3>
-      <div>Base attack damage: <strong>{{ normalDamage }}</strong></div>
-      <div>Base heavy attack damage: <strong>{{ heavyDamage }}</strong></div>
-      <div>Base throw damage: <strong>{{ throwDamage }}</strong></div>
-      <div>Base magic damage (projectile/jump): <strong>{{ magicDamage }}</strong></div>
-      <div>Splash magic damage: <strong>{{ splashDamage }}</strong></div>
-      <div v-if="magic >= 15">
-        Elemental infusion damage: <strong>{{ infusionDamage }}</strong> or <strong>{{ infusionDamage * 2 }}</strong> piercing
+      <div v-if="this.mode < 3">
+        Exp: <strong>{{ experience }}</strong>
       </div>
-      <div>Arrow damage: <strong>{{ arrowDamage }}</strong></div>
-      <div v-if="this.mode < 3">Bomb damage: <strong>{{ bombDamage }}</strong></div>
-      <div>🧪 Combo damage: <strong>{{ comboDamage.reduce((prev, cur) => prev + cur) }}</strong></div>
+      <div v-else>Level: <strong>30</strong></div>
+      <div>
+        Strength: <strong>{{ totalStrength }}</strong>
+      </div>
+      <div>
+        Magic: <strong>{{ totalMagic }}</strong>
+      </div>
+      <div>
+        Defense: <strong>{{ totalDefense }}</strong>
+      </div>
+      <div>
+        Agility: <strong>{{ totalAgility }}</strong>
+      </div>
+      <h3>Damage</h3>
+      <div>
+        Base attack damage: <strong>{{ normalDamage }}</strong>
+      </div>
+      <div>
+        Base heavy attack damage: <strong>{{ heavyDamage }}</strong>
+      </div>
+      <div>
+        Base throw damage: <strong>{{ throwDamage }}</strong>
+      </div>
+      <div>
+        Base magic damage (projectile/jump): <strong>{{ magicDamage }}</strong>
+      </div>
+      <div>
+        Splash magic damage: <strong>{{ splashDamage }}</strong>
+      </div>
+      <div v-if="magic >= 15">
+        Elemental infusion damage: <strong>{{ infusionDamage }}</strong> or
+        <strong>{{ infusionDamage * 2 }}</strong> piercing
+      </div>
+      <div>
+        Arrow damage: <strong>{{ arrowDamage }}</strong>
+      </div>
+      <div v-if="this.mode < 3">
+        Bomb damage: <strong>{{ bombDamage }}</strong>
+      </div>
+      <div>
+        🧪 Combo damage: <strong>{{ comboDamage.reduce((prev, cur) => prev + cur) }}</strong>
+      </div>
       <h3>Defense</h3>
-      <div>Health: <strong>{{ health }}</strong></div>
-      <div>Resistance: <strong>{{ resistance }}</strong></div>
-      <div>Damage taken: <strong>{{ damageTaken }}%</strong></div>
-      <div>Run speed: <strong>x{{ runSpeed }}</strong></div>
+      <div>
+        Health: <strong>{{ health }}</strong>
+      </div>
+      <div>
+        Resistance: <strong>{{ resistance }}</strong>
+      </div>
+      <div>
+        Damage taken: <strong>{{ damageTaken }}%</strong>
+      </div>
+      <div>
+        Run speed: <strong>x{{ runSpeed }}</strong>
+      </div>
       <h3>Enemy hits</h3>
       <div class="CCR" v-html="output"></div>
       <div class="CC"></div>
@@ -389,6 +423,11 @@ body {
 
 .CCR {
   white-space: pre;
+}
+
+.weapons > span,
+.pets > span {
+  margin-left: 8px;
 }
 
 @media only screen and (min-width: 768px) {
