@@ -141,6 +141,7 @@ rt m = magic</pre
         </div>
       </div>
       <h3>Stats total</h3>
+      <div>Exp: {{ experience }}</div>
       <div>Strength: {{ totalStrength }}</div>
       <div>Magic: {{ totalMagic }}</div>
       <div>Defense: {{ totalDefense }}</div>
@@ -239,7 +240,7 @@ export default {
       return this.level >= 20 ? 38 + (Math.min(this.level, 78) - 20) : (this.level - 1) * 2;
     },
     health() {
-      return this.mode === 3 ? 1000 : 100 + 3 * (this.level - 1) + 28 * (this.totalDefense - 1);
+      return this.mode === 3 ? 1000 : 69 + this.level * 3 + this.totalDefense * 28;
     },
     resistance() {
       return 40.5 + 0.5 * (this.totalDefense - 1);
@@ -249,6 +250,9 @@ export default {
     },
     runSpeed() {
       return Math.min(1 * (1 + this.totalAgility * 0.02), 1.5).toFixed(2);
+    },
+    experience() {
+      return this.level === 1 ? 0 : ((this.level - 1) * ((this.level - 2) * 20 + 380)) / 2 + 1;
     },
   },
   data() {
@@ -269,6 +273,8 @@ export default {
       normalDamage: 0,
       heavyDamage: 0,
       throwDamage: 0,
+      // TODO: spinDamage: 1,
+      // TODO: fallDamage: 7,
       comboDamage: 0,
       output: '',
       doCrit: false,

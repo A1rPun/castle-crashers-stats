@@ -4,13 +4,14 @@
 
 ## TODO
 
+- fix TODOS in code
 - OG CC
 - combo input
-- 7 dmg slam?
 - fix skeleton data
 - fix bear boss data
 - add necromancer enemies
 - mobile layout
+- [formulas](https://gamefaqs.gamespot.com/xbox360/934458-castle-crashers/faqs/54118)
 
 ```
 {
