@@ -16,18 +16,18 @@
         <h3>Mode</h3>
         <label>
           <span>Normal</span>
-          <input type="radio" v-model="isNormal" :value="true" @change="updateStats" />
+          <input type="radio" v-model="mode" :value="1" @change="changeMode" />
         </label>
         <label>
           <span>Insane</span>
-          <input type="radio" v-model="isNormal" :value="false" @change="updateStats" />
+          <input type="radio" v-model="mode" :value="2" @change="changeMode" />
         </label>
         <label>
-          <s>Arena</s>
-          <input type="radio" @change="updateStats" disabled />
+          <span>Arena</span>
+          <input type="radio" v-model="mode" :value="3" @change="changeMode" />
         </label>
       </div>
-      <div class="players">
+      <div class="players" v-if="this.mode < 3">
         <h3>Number of players</h3>
         <label>
           <span>1p</span>
@@ -58,24 +58,25 @@
               min="1"
               max="99"
               @change="updateStats"
+              :disabled="this.mode === 3"
             />
           </div>
         </label>
         <label>
           <span>Strength</span>
-          <StatBar v-model="strength" @change="updateStats"></StatBar>
+          <StatBar v-model="strength" @change="updateStats" :disabled="this.mode === 3"></StatBar>
         </label>
         <label>
           <span>Magic</span>
-          <StatBar v-model="magic" @change="updateStats"></StatBar>
+          <StatBar v-model="magic" @change="updateStats" :disabled="this.mode === 3"></StatBar>
         </label>
         <label>
           <span>Defense</span>
-          <StatBar v-model="defense" @change="updateStats"></StatBar>
+          <StatBar v-model="defense" @change="updateStats" :disabled="this.mode === 3"></StatBar>
         </label>
         <label>
           <span>Agility</span>
-          <StatBar v-model="agility" @change="updateStats"></StatBar>
+          <StatBar v-model="agility" @change="updateStats" :disabled="this.mode === 3"></StatBar>
         </label>
       </div>
       <div>
@@ -124,18 +125,20 @@ rt m = magic</pre
       </div>
     </div>
     <div class="output">
-      <div v-if="(weapon.level || 1) > level">
-        {{ weapon.name }} has a level requirement of {{ weapon.level }}
-      </div>
-      <div v-if="spendStatPoints < totalStatPoints">
-        {{ totalStatPoints - spendStatPoints }} unspend stat points based on level {{ level }} ({{
-          totalStatPoints
-        }}
-        points)
-      </div>
-      <div v-if="spendStatPoints > totalStatPoints">
-        spend {{ spendStatPoints - totalStatPoints }} stat points too much based on level
-        {{ level }} ({{ totalStatPoints }} points)
+      <div v-if="this.mode < 3">
+        <div v-if="(weapon.level || 1) > level">
+          {{ weapon.name }} has a level requirement of {{ weapon.level }}
+        </div>
+        <div v-if="spendStatPoints < totalStatPoints">
+          {{ totalStatPoints - spendStatPoints }} unspend stat points based on level {{ level }} ({{
+            totalStatPoints
+          }}
+          points)
+        </div>
+        <div v-if="spendStatPoints > totalStatPoints">
+          spend {{ spendStatPoints - totalStatPoints }} stat points too much based on level
+          {{ level }} ({{ totalStatPoints }} points)
+        </div>
       </div>
       <h3>Stats total</h3>
       <div>Strength: {{ totalStrength }}</div>
@@ -143,16 +146,16 @@ rt m = magic</pre
       <div>Defense: {{ totalDefense }}</div>
       <div>Agility: {{ totalAgility }}</div>
       <h3>Damage</h3>
-      <div>Normal attack damage: {{ normalDamage }}</div>
-      <div>Heavy attack damage: {{ heavyDamage }}</div>
-      <div>Throw damage: {{ throwDamage }}</div>
+      <div>Base attack damage: {{ normalDamage }}</div>
+      <div>Base heavy attack damage: {{ heavyDamage }}</div>
+      <div>Base throw damage: {{ throwDamage }}</div>
+      <div>Base magic damage (projectile/jump): {{ magicDamage }}</div>
       <div>Splash magic damage: {{ splashDamage }}</div>
-      <div v-if="magic >= 10">Projectile/Jump magic damage: {{ magicDamage }}</div>
       <div v-if="magic >= 15">
         Elemental infusion damage: {{ infusionDamage }} or {{ infusionDamage * 2 }} piercing
       </div>
       <div>Arrow damage: {{ arrowDamage }}</div>
-      <div>Bomb damage: {{ bombDamage }}</div>
+      <div v-if="this.mode < 3">Bomb damage: {{ bombDamage }}</div>
       <h3>Defense</h3>
       <div>Health: {{ health }}</div>
       <div>Resistance: {{ resistance }}</div>
@@ -172,6 +175,8 @@ import ccrstats from './scripts/ccrstats.js';
 import basestats from './assets/basestats.js';
 import weapons from './assets/weapons.js';
 import pets from './assets/pets.js';
+import calculateHits from './scripts/calculateHits.js';
+import calculateDamage from './scripts/calculateDamage.js';
 
 export default {
   name: 'CCStats',
@@ -201,7 +206,7 @@ export default {
       return Math.max(Math.floor(this.defense + this.extraDefense), 1);
     },
     totalAgility() {
-      return Math.max(Math.floor(this.agility + this.extraAgility), 1);
+      return Math.max(this.agility + this.extraAgility, 1);
     },
     normalAttack() {
       return this.strength + basestats.normal;
@@ -222,7 +227,7 @@ export default {
       return this.normalDamage + this.magicDamage;
     },
     arrowDamage() {
-      return 2 + this.totalAgility;
+      return 2 + Math.floor(this.totalAgility);
     },
     bombDamage() {
       return (this.magicDamage < this.throwDamage ? this.throwDamage : this.magicDamage) * 2;
@@ -234,7 +239,7 @@ export default {
       return this.level >= 20 ? 38 + (Math.min(this.level, 78) - 20) : (this.level - 1) * 2;
     },
     health() {
-      return 100 + 3 * (this.level - 1) + 28 * (this.totalDefense - 1);
+      return this.mode === 3 ? 1000 : 100 + 3 * (this.level - 1) + 28 * (this.totalDefense - 1);
     },
     resistance() {
       return 40.5 + 0.5 * (this.totalDefense - 1);
@@ -249,7 +254,7 @@ export default {
   data() {
     return {
       OG: false,
-      isNormal: true,
+      mode: 1,
       numPlayers: 1,
       level: 8,
       strength: 1,
@@ -277,13 +282,32 @@ export default {
     calcDamage: function (baseAttack) {
       return Math.floor(baseAttack + this.extraStrength) * (this.doCrit ? this.critMultiplier : 1);
     },
+    changeMode() {
+      if (this.mode === 3) {
+        this.level = 30;
+        this.strength = 20;
+        this.magic = 20;
+        this.defense = 30;
+        this.agility = 7.5;
+      }
+      this.updateStats();
+    },
     updateStats() {
       if (!this.weapon?.crit) this.doCrit = false;
       this.heavyDamage = this.calcDamage(this.heavyAttack);
       this.throwDamage = this.calcDamage(this.throwAttack);
       const damage = this.calcDamage(this.normalAttack);
       this.normalDamage = damage;
-      this.output = ccrstats(damage, this.isNormal, this.numPlayers);
+      if (this.mode < 3) this.output = ccrstats(damage, this.mode === 1, this.numPlayers);
+      else
+        this.output = `Arena player in ${Math.round(
+          calculateHits(1000, -10, this.normalDamage)
+        )} hits
+${Math.round(calculateDamage(-10, this.normalDamage))} normal damage
+${Math.round(calculateDamage(-10, this.heavyDamage))} heavy damage
+${Math.round(calculateDamage(-10, this.throwDamage))} throw damage
+${Math.floor(calculateDamage(-10, this.splashDamage))} splash magic damage
+${Math.round(calculateDamage(-10, this.magicDamage))} projectile/jump magic damage`;
       this.calcCombo();
     },
   },

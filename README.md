@@ -5,27 +5,14 @@
 ## TODO
 
 - OG CC
-- arena
-- 7 dmg slam?
 - combo input
-- crit
+- 7 dmg slam?
 - fix skeleton data
 - fix bear boss data
 - add necromancer enemies
 - mobile layout
 
 ```
-// arena
-// level 30
-// 1000 health
-// 20 strength
-// 26 base melee
-// 20 magic
-// 43 base magic
-// 30 defense
-// resistance 55
-// 7.5 agility
-
 {
   "Enemy": "Bear Boss",
   "Insane1p": 2150,

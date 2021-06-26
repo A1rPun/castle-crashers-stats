@@ -1,5 +1,6 @@
 export default [
   { name: 'Broad Axe', strength: 1 },
+  { name: 'Chicken Stick', level: 5, magic: 2, defense: -1, agility: 1 },
   { name: 'Club', level: 20, strength: 5, defense: 5, agility: -3 },
   { name: 'Emerald Sword', magic: 3, agility: -1 },
   { name: 'Evil Sword', level: 20, magic: 2, defense: 7 },
