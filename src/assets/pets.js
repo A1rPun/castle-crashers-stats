@@ -1,12 +1,12 @@
 export default [
-  {
-    name: 'No Pet',
-  },
+  { name: 'No Pet' },
   {
     name: 'Beholder',
     magic: 4,
     ccMagic: 2,
   },
+  { name: 'BiPolar Bear' },
+  { name: 'Bitey Bat' },
   {
     name: 'Burly Bear',
     strength: 3,
@@ -14,23 +14,50 @@ export default [
     ccStrength: 2,
   },
   {
+    name: 'Cardinal',
+    magic: 2,
+    ccMagic: 0,
+  },
+  {
     name: 'Chicken',
     strength: 1,
     defense: 1,
     agility: 1,
   },
+  { name: 'Dragonhead' },
+  { name: 'Frogglet' },
+  { name: 'Giraffey' },
+  { name: 'Golden Whale' },
   { name: 'Hawkster' },
+  { name: 'Install Ball' },
   {
     name: 'Meowburt',
     agility: 4,
     ccAgility: 3,
   },
+  { name: 'Monkeyface' },
+  { name: 'Mr. Buddy' },
+  { name: 'Owlet' },
+  {
+    name: 'Pazzo',
+    defense: 2,
+    ccDefense: 0,
+  },
+  { name: 'Pelter' },
+  { name: 'Piggy' },
+  { name: 'Rammy' },
   {
     name: 'Scratchpaw',
     strength: 2,
     agility: 2,
     ccStrength: 1,
   },
+  {
+    name: 'Seahorse',
+    agility: 2,
+    ccAgility: 0,
+  },
+  { name: 'Sherbert' },
   {
     name: 'Snailburt',
     defense: 5,
@@ -46,5 +73,18 @@ export default [
     name: 'Spiny',
     defense: 4,
     ccDefense: 2,
+  },
+  { name: 'Troll' },
+  {
+    name: 'Yeti',
+    strength: 2,
+    ccStrength: 0,
+  },
+  {
+    name: 'Zebra',
+    magic: 2,
+    ccMagic: 0,
+    agility: 2,
+    ccAgility: 0,
   },
 ];
