@@ -119,8 +119,10 @@ x  l = light attack
 y  h = heavy attack
 a  j = jump
 b  u = use item (arrow)
-rt m = magic</pre
-          >
+rt m = magic
+
+Example: rta xyy xyy xy xyy xy xy xy
+          </pre>
         </div>
       </div>
     </div>
@@ -315,7 +317,7 @@ export default {
       magic: 1,
       defense: 1,
       agility: 1,
-      combo: 'rta xyy xyy xy xyy xy xy xy',
+      combo: 'a xyy',
       defaultWeapon: 'Alien Gun',
       weapon: {},
       weapons,
@@ -345,19 +347,19 @@ export default {
       const urlParams = new URLSearchParams(window.location.search);
 
       const mode = urlParams.get('mode');
-      if (mode) this.mode = mode;
+      if (mode) this.mode = parseInt(mode, 10);
       const num = urlParams.get('players');
-      if (num) this.numPlayers = num;
+      if (num) this.numPlayers = parseInt(num, 10);
       const lvl = urlParams.get('lvl');
-      if (lvl) this.level = lvl;
+      if (lvl) this.level = parseInt(lvl, 10);
       const str = urlParams.get('str');
-      if (str) this.strength = str;
+      if (str) this.strength = parseInt(str, 10);
       const mag = urlParams.get('mag');
-      if (mag) this.magic = mag;
+      if (mag) this.magic = parseInt(mag, 10);
       const def = urlParams.get('def');
-      if (def) this.defense = def;
+      if (def) this.defense = parseInt(def, 10);
       const agi = urlParams.get('agi');
-      if (agi) this.agility = agi;
+      if (agi) this.agility = parseInt(agi, 10);
       const weap = urlParams.get('weap');
       if (weap) this.defaultWeapon = weap;
       const orb = urlParams.get('orb');
@@ -372,9 +374,15 @@ export default {
       if (this.magic > 1) urlParams.set('mag', this.magic);
       if (this.defense > 1) urlParams.set('def', this.defense);
       if (this.agility > 1) urlParams.set('agi', this.agility);
-      if (this.weapon?.name) urlParams.set('weap', this.weapon.name);
-      if (this.pet?.name) urlParams.set('orb', this.pet.name);
-      window.history.replaceState('', '', urlParams.toString() ? '?' + urlParams : '');
+      if (this.weapon?.name !== 'Alien Gun') urlParams.set('weap', this.weapon.name);
+      if (this.pet?.name !== 'None') urlParams.set('orb', this.pet.name);
+      if (this.combo !== 'a xyy') urlParams.set('combo', this.combo);
+      console.log(urlParams.toString());
+      window.history.replaceState(
+        {},
+        '',
+        window.location.pathname + (urlParams.toString() ? '?' + urlParams : '')
+      );
     },
     updateStats() {
       if (!this.weapon?.crit) this.doCrit = false;
