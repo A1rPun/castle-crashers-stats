@@ -49,6 +49,7 @@ export default {
   Bat: {
     oneDamagePerHit: true,
     NormalHealth: 1,
+    InsaneMultiplier: 1,
   },
   'Big Fish': {
     Fire: -20,
@@ -257,6 +258,7 @@ export default {
   Scorpion: {
     oneDamagePerHit: true,
     NormalHealth: 1,
+    InsaneMultiplier: 1,
   },
   Antlion: {
     NormalHealth: 200,
@@ -287,6 +289,7 @@ export default {
   Alien: {
     oneDamagePerHit: true,
     NormalHealth: 1,
+    InsaneMultiplier: 1,
   },
   UFO: {
     NormalHealth: 400,
