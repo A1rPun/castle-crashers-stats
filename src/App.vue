@@ -120,7 +120,8 @@ a  j = jump
 b  u = use item (arrow)
 rt m = magic
 
-Example: rta xyy xyy xy xyy xy xy xy
+Example: j lhl
+Example: RTA XYY XYY XY XYY XY XY XY
           </pre>
         </div>
       </div>
@@ -458,6 +459,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 16px;
   box-sizing: border-box;
+  /* overflow: hidden; */
 }
 
 * {
@@ -467,19 +469,19 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  height: 100vh;
 }
 
 .input {
   flex: 1;
-  padding: 0 32px;
+  padding: 0 32px 32px;
   background: #222;
   color: #eee;
 }
 
 .output {
   flex: 1;
-  padding: 0 32px;
+  padding: 0 32px 32px;
   overflow-x: hidden;
   background: rgb(102, 204, 102);
   background: linear-gradient(
@@ -511,12 +513,10 @@ body {
   }
 
   .input {
-    height: 100vh;
     overflow-y: auto;
   }
 
   .output {
-    height: 100vh;
     overflow-y: auto;
   }
 }

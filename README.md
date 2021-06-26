@@ -10,11 +10,9 @@
 
 ## TODO
 
-- OG CC
 - fix skeleton data
 - fix bear boss data
 - add necromancer waves data
-- top/bottom padding input/output
 - [more weapons](https://castlecrashers.fandom.com/wiki/Weapons)
 - [formulas](https://gamefaqs.gamespot.com/xbox360/934458-castle-crashers/faqs/54118)
 
