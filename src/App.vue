@@ -364,6 +364,8 @@ export default {
       if (weap) this.defaultWeapon = weap;
       const orb = urlParams.get('orb');
       if (orb) this.defaultPet = orb;
+      const combo = urlParams.get('combo');
+      if (combo) this.combo = combo;
     },
     setUrloptions() {
       const urlParams = new URLSearchParams();
