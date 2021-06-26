@@ -99,7 +99,7 @@
         </div>
       </div>
       <div class="pets">
-        <h3>Pet</h3>
+        <h3>Animal Orb</h3>
         <select v-model="pet" @change="updateStats">
           <option v-for="p in pets" :value="p" :key="p.name">
             {{ p.name }}
@@ -183,7 +183,7 @@ rt m = magic</pre
         Bomb damage: <strong>{{ bombDamage }}</strong>
       </div>
       <div>
-        🧪 Combo damage: <strong>{{ comboDamage.reduce((prev, cur) => prev + cur) }}</strong>
+        🧪 Combo damage: <strong>{{ comboDamage.reduce((prev, cur) => prev + cur, 0) }}</strong>
       </div>
       <h3>Defense</h3>
       <div>
@@ -310,20 +310,22 @@ export default {
       OG: false,
       mode: 1,
       numPlayers: 1,
-      level: 8,
+      level: 1,
       strength: 1,
-      magic: 15,
+      magic: 1,
       defense: 1,
       agility: 1,
       combo: 'rta xyy xyy xy xyy xy xy xy',
+      defaultWeapon: 'Alien Gun',
       weapon: {},
       weapons,
+      defaultPet: 'None',
       pet: {},
       pets,
       normalDamage: 0,
       heavyDamage: 0,
       throwDamage: 0,
-      comboDamage: 0,
+      comboDamage: [],
       output: '',
       doCrit: false,
       critMultiplier: 4,
@@ -338,6 +340,41 @@ export default {
     },
     calcArenaDamage: function (baseDamage) {
       return Math.round(calculateDamage(-10, baseDamage));
+    },
+    getUrlOptions() {
+      const urlParams = new URLSearchParams(window.location.search);
+
+      const mode = urlParams.get('mode');
+      if (mode) this.mode = mode;
+      const num = urlParams.get('players');
+      if (num) this.numPlayers = num;
+      const lvl = urlParams.get('lvl');
+      if (lvl) this.level = lvl;
+      const str = urlParams.get('str');
+      if (str) this.strength = str;
+      const mag = urlParams.get('mag');
+      if (mag) this.magic = mag;
+      const def = urlParams.get('def');
+      if (def) this.defense = def;
+      const agi = urlParams.get('agi');
+      if (agi) this.agility = agi;
+      const weap = urlParams.get('weap');
+      if (weap) this.defaultWeapon = weap;
+      const orb = urlParams.get('orb');
+      if (orb) this.defaultPet = orb;
+    },
+    setUrloptions() {
+      const urlParams = new URLSearchParams();
+      if (this.mode > 1) urlParams.set('mode', this.mode);
+      if (this.numPlayers > 1) urlParams.set('players', this.numPlayers);
+      if (this.level > 1) urlParams.set('lvl', this.level);
+      if (this.strength > 1) urlParams.set('str', this.strength);
+      if (this.magic > 1) urlParams.set('mag', this.magic);
+      if (this.defense > 1) urlParams.set('def', this.defense);
+      if (this.agility > 1) urlParams.set('agi', this.agility);
+      if (this.weapon?.name) urlParams.set('weap', this.weapon.name);
+      if (this.pet?.name) urlParams.set('orb', this.pet.name);
+      window.history.replaceState('', '', urlParams.toString() ? '?' + urlParams : '');
     },
     updateStats() {
       if (!this.weapon?.crit) this.doCrit = false;
@@ -366,11 +403,13 @@ ${this.calcArenaDamage(this.magicDamage)} projectile/jump magic damage
           this.comboDamage.length
         } hits`;
       }
+      this.setUrloptions();
     },
   },
   mounted() {
-    this.weapon = weapons.find(x => x.name === 'Mace');
-    this.pet = pets.find(x => x.name === 'No Pet');
+    this.getUrlOptions();
+    this.weapon = weapons.find(x => x.name === this.defaultWeapon);
+    this.pet = pets.find(x => x.name === this.defaultPet);
     this.updateStats();
   },
 };

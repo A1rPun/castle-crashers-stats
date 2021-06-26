@@ -1,5 +1,5 @@
 export default [
-  { name: 'No Pet' },
+  { name: 'None' },
   {
     name: 'Beholder',
     magic: 4,
