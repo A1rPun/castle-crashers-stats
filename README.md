@@ -11,6 +11,7 @@
 - fix bear boss data
 - add necromancer enemies
 - mobile layout
+- share setup (via url)
 - [formulas](https://gamefaqs.gamespot.com/xbox360/934458-castle-crashers/faqs/54118)
 
 ```

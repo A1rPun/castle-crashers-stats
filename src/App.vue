@@ -1,7 +1,8 @@
 <template>
   <div class="container">
     <div class="input">
-      <div class="game">
+      <h1>Castle Crashers Remastered</h1>
+      <!-- <div class="game">
         <h3>Game</h3>
         <label>
           <span>Castle Crashers Remastered</span>
@@ -11,7 +12,7 @@
           <s>Castle Crashers</s>
           <input type="radio" v-model="OG" :value="true" @change="updateStats" disabled />
         </label>
-      </div>
+      </div> -->
       <div class="modes">
         <h3>Mode</h3>
         <label>
