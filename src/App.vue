@@ -469,7 +469,6 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
 }
 
 .input {
@@ -510,6 +509,7 @@ body {
 @media only screen and (min-width: 768px) {
   .container {
     flex-direction: row;
+    height: 100vh;
   }
 
   .input {
