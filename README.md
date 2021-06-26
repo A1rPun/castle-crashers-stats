@@ -4,14 +4,13 @@
 
 ## TODO
 
-- fix TODOS in code
 - OG CC
 - fix skeleton data
 - fix bear boss data
-- add necromancer enemies
-- mobile layout
+- add necromancer waves data
 - share setup (via url)
 - more pets
+- top/bottom padding input/output
 - [more weapons](https://castlecrashers.fandom.com/wiki/Weapons)
 - [formulas](https://gamefaqs.gamespot.com/xbox360/934458-castle-crashers/faqs/54118)
 

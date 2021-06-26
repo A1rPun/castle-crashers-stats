@@ -20,11 +20,11 @@
           <input type="radio" v-model="mode" :value="1" @change="updateStats" />
         </label>
         <label>
-          <span>Insane</span>
+          <span> Insane</span>
           <input type="radio" v-model="mode" :value="2" @change="updateStats" />
         </label>
         <label>
-          <span>Arena</span>
+          <span> Arena</span>
           <input type="radio" v-model="mode" :value="3" @change="updateStats" />
         </label>
       </div>
@@ -35,15 +35,15 @@
           <input type="radio" v-model="numPlayers" :value="1" @change="updateStats" />
         </label>
         <label>
-          <span>2p</span>
+          <span> 2p</span>
           <input type="radio" v-model="numPlayers" :value="2" @change="updateStats" />
         </label>
         <label>
-          <span>3p</span>
+          <span> 3p</span>
           <input type="radio" v-model="numPlayers" :value="3" @change="updateStats" />
         </label>
         <label>
-          <span>4p</span>
+          <span> 4p</span>
           <input type="radio" v-model="numPlayers" :value="4" @change="updateStats" />
         </label>
       </div>
@@ -62,22 +62,22 @@
             />
           </div>
         </label>
-        <label>
+        <div>
           <span>Strength</span>
           <StatBar v-model="strength" @change="updateStats"></StatBar>
-        </label>
-        <label>
+        </div>
+        <div>
           <span>Magic</span>
           <StatBar v-model="magic" @change="updateStats"></StatBar>
-        </label>
-        <label>
+        </div>
+        <div>
           <span>Defense</span>
           <StatBar v-model="defense" @change="updateStats"></StatBar>
-        </label>
-        <label>
+        </div>
+        <div>
           <span>Agility</span>
           <StatBar v-model="agility" @change="updateStats"></StatBar>
-        </label>
+        </div>
       </div>
       <div>
         <h3>Weapon</h3>
@@ -127,45 +127,45 @@ rt m = magic</pre
     <div class="output">
       <div v-if="this.mode < 3">
         <div v-if="(weapon.level || 1) > level">
-          {{ weapon.name }} has a level requirement of {{ weapon.level }}
+          {{ weapon.name }} has a level requirement of <strong>{{ weapon.level }}</strong>
         </div>
         <div v-if="spendStatPoints < totalStatPoints">
-          {{ totalStatPoints - spendStatPoints }} unspend stat points based on level {{ level }} ({{
+          <strong>{{ totalStatPoints - spendStatPoints }}</strong> unspend stat points based on level {{ level }} ({{
             totalStatPoints
           }}
           points)
         </div>
         <div v-if="spendStatPoints > totalStatPoints">
-          spend {{ spendStatPoints - totalStatPoints }} stat points too much based on level
+          spend <strong>{{ spendStatPoints - totalStatPoints }}</strong> stat points too much based on level
           {{ level }} ({{ totalStatPoints }} points)
         </div>
       </div>
       <h3>Stats total</h3>
-      <div v-if="this.mode < 3">Exp: {{ experience }}</div>
-      <div v-else>Level: 30</div>
-      <div>Strength: {{ totalStrength }}</div>
-      <div>Magic: {{ totalMagic }}</div>
-      <div>Defense: {{ totalDefense }}</div>
-      <div>Agility: {{ totalAgility }}</div>
+      <div v-if="this.mode < 3">Exp: <strong>{{ experience }}</strong></div>
+      <div v-else>Level: <strong>30</strong></div>
+      <div>Strength: <strong>{{ totalStrength }}</strong></div>
+      <div>Magic: <strong>{{ totalMagic }}</strong></div>
+      <div>Defense: <strong>{{ totalDefense }}</strong></div>
+      <div>Agility: <strong>{{ totalAgility }}</strong></div>
       <h3>Damage</h3>
-      <div>Base attack damage: {{ normalDamage }}</div>
-      <div>Base heavy attack damage: {{ heavyDamage }}</div>
-      <div>Base throw damage: {{ throwDamage }}</div>
-      <div>Base magic damage (projectile/jump): {{ magicDamage }}</div>
-      <div>Splash magic damage: {{ splashDamage }}</div>
+      <div>Base attack damage: <strong>{{ normalDamage }}</strong></div>
+      <div>Base heavy attack damage: <strong>{{ heavyDamage }}</strong></div>
+      <div>Base throw damage: <strong>{{ throwDamage }}</strong></div>
+      <div>Base magic damage (projectile/jump): <strong>{{ magicDamage }}</strong></div>
+      <div>Splash magic damage: <strong>{{ splashDamage }}</strong></div>
       <div v-if="magic >= 15">
-        Elemental infusion damage: {{ infusionDamage }} or {{ infusionDamage * 2 }} piercing
+        Elemental infusion damage: <strong>{{ infusionDamage }}</strong> or <strong>{{ infusionDamage * 2 }}</strong> piercing
       </div>
-      <div>Arrow damage: {{ arrowDamage }}</div>
-      <div v-if="this.mode < 3">Bomb damage: {{ bombDamage }}</div>
-      <div>🧪 Combo damage: {{ comboDamage.reduce((prev, cur) => prev + cur) }}</div>
+      <div>Arrow damage: <strong>{{ arrowDamage }}</strong></div>
+      <div v-if="this.mode < 3">Bomb damage: <strong>{{ bombDamage }}</strong></div>
+      <div>🧪 Combo damage: <strong>{{ comboDamage.reduce((prev, cur) => prev + cur) }}</strong></div>
       <h3>Defense</h3>
-      <div>Health: {{ health }}</div>
-      <div>Resistance: {{ resistance }}</div>
-      <div>Damage taken: {{ damageTaken }}%</div>
-      <div>Run speed: x{{ runSpeed }}</div>
+      <div>Health: <strong>{{ health }}</strong></div>
+      <div>Resistance: <strong>{{ resistance }}</strong></div>
+      <div>Damage taken: <strong>{{ damageTaken }}%</strong></div>
+      <div>Run speed: <strong>x{{ runSpeed }}</strong></div>
       <h3>Enemy hits</h3>
-      <div class="CCR">{{ output }}</div>
+      <div class="CCR" v-html="output"></div>
       <div class="CC"></div>
     </div>
   </div>
@@ -328,7 +328,9 @@ ${this.calcArenaDamage(this.heavyDamage)} heavy damage
 ${this.calcArenaDamage(this.throwDamage)} throw damage
 ${Math.floor(calculateDamage(-10, this.splashDamage))} splash magic damage
 ${this.calcArenaDamage(this.magicDamage)} projectile/jump magic damage
-🧪 ${this.comboDamage.reduce((acc, cur) => acc + this.calcArenaDamage(cur), 0)} combo damage with ${this.comboDamage.length} hits`;
+🧪 ${this.comboDamage.reduce((acc, cur) => acc + this.calcArenaDamage(cur), 0)} combo damage with ${
+          this.comboDamage.length
+        } hits`;
       }
     },
   },
@@ -344,8 +346,9 @@ ${this.calcArenaDamage(this.magicDamage)} projectile/jump magic damage
 html,
 body {
   margin: 0;
-  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
 * {
@@ -354,20 +357,29 @@ body {
 
 .container {
   display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .input {
   flex: 1;
   padding: 0 32px;
-  max-height: 100vh;
-  overflow-y: auto;
+  background: #222;
+  color: #eee;
 }
 
 .output {
   flex: 1;
   padding: 0 32px;
-  max-height: 100vh;
-  overflow-y: auto;
+  overflow-x: hidden;
+  background: rgb(102, 204, 102);
+  background: linear-gradient(
+    135deg,
+    rgba(102, 204, 102, 1) 0%,
+    rgba(254, 0, 0, 1) 33%,
+    rgba(101, 153, 255, 1) 66%,
+    rgba(254, 153, 0, 1) 100%
+  );
 }
 
 .stats {
@@ -377,5 +389,21 @@ body {
 
 .CCR {
   white-space: pre;
+}
+
+@media only screen and (min-width: 768px) {
+  .container {
+    flex-direction: row;
+  }
+
+  .input {
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .output {
+    height: 100vh;
+    overflow-y: auto;
+  }
 }
 </style>

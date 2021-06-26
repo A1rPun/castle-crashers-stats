@@ -21,7 +21,7 @@ export default function (strength, normal, numPlayers) {
     .filter(([, x]) => x.NormalHealth)
     .map(([name, x]) => {
       const hits = formatHits(x, strength, normal, numPlayers);
-      return `${name} in ${Math.round(hits)} hits`;
+      return `${name} in <strong>${Math.round(hits)}</strong> hits`;
     })
     .join('\n');
 }

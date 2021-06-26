@@ -52,19 +52,20 @@ export default {
 
 <style>
 .center {
-  /* TODO: FIX */
   position: absolute;
-  top: 20%;
-  left: 20%;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
   pointer-events: none;
 }
 
 .statbar {
   position: relative;
+  color: #000;
 }
 
 .statbar > span {
-  width: 16px;
+  width: calc(4% - 2px);
   height: 32px;
   background: #dfdfdf;
   border-top: 1px solid black;
