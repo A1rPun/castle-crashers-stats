@@ -28,7 +28,7 @@ export default function (strength, normal, numPlayers) {
     .map(([name, x]) => {
       const health = normal ? getHealth(x, numPlayers) : getHealthInsane(x, numPlayers);
       const hits = x.oneDamagePerHit ? health : calculateHits(health, x.Physical ?? 0, strength);
-      return `${name} with ${health}hp in <strong>${Math.round(hits)}</strong> hits`;
+      return `${name} ${health}hp in <strong>${Math.ceil(hits)}</strong> hits`;
     })
     .join('\n');
 }
