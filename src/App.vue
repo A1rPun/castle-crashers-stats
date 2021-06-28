@@ -327,7 +327,7 @@ export default {
       return this.normalDamage + this.magicDamage;
     },
     dotDamage() {
-      return Math.floor(3 + this.magicDamage * 0.4 + this.level * 0.1);
+      return Math.floor(3 + this.magicDamage * 0.4 + (this.mode === 3 ? 30 : this.level) * 0.1);
     },
     arrowDamage() {
       return 2 + Math.floor(this.totalAgility);
