@@ -206,6 +206,9 @@ Example: RTA XYY XYY XY XYY XY XY XY
       <div>
         Run speed: <strong>x{{ runSpeed }}</strong>
       </div>
+      <div>
+        King Healing: <strong>{{ healing }}hp</strong>, {{ Math.ceil(health / healing) }} times for full health
+      </div>
       <h3>Enemy hits</h3>
       <div class="text_output" v-html="output"></div>
       <div>
@@ -329,6 +332,9 @@ export default {
     dotDamage() {
       return Math.floor(3 + this.magicDamage * 0.4 + (this.mode === 3 ? 30 : this.level) * 0.1);
     },
+    healing() {
+      return Math.round(this.magicDamage * 0.25);
+    },
     arrowDamage() {
       return 2 + Math.floor(this.totalAgility);
     },
@@ -434,7 +440,7 @@ export default {
       if (this.weapon?.name !== 'Alien Gun') urlParams.set('weap', this.weapon.name);
       if (this.pet?.name !== 'None') urlParams.set('orb', this.pet.name);
       if (this.doCrit) urlParams.set('crit', 1);
-      if (this.combo !== 'a xyy') urlParams.set('combo', this.combo);
+      if (this.combo && this.combo !== 'a xyy') urlParams.set('combo', this.combo);
       window.history.replaceState(
         {},
         '',
