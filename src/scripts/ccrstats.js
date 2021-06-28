@@ -2,26 +2,33 @@
 import enemies from '../assets/enemies.js';
 import calculateHits from './calculateHits.js';
 
-function formatHits(x, strength, normal, numPlayers) {
+function getHealth(x, numPlayers) {
   let health = x.NormalHealth;
-  const multiplier = x.InsaneMultiplier ?? 10;
+  if (numPlayers > 1) health += (x.PerPlayerHealthIncrease ?? 0) * (numPlayers - 1);
+  return health;
+}
 
-  if (!normal) health *= multiplier;
-
-  if (numPlayers > 1)
-    health +=
-      (normal ? x.PerPlayerHealthIncrease ?? 0 : (x.PerPlayerHealthIncrease ?? 0) * multiplier) *
-      (numPlayers - 1);
-
-  return x.oneDamagePerHit ? health : calculateHits(health, x.Physical ?? 0, strength);
+function getHealthInsane(x, numPlayers) {
+  if (x.InsaneHealth) {
+    let health = x.InsaneHealth;
+    if (numPlayers > 1) health += (x.PerPlayerHealthIncreaseInsane ?? 0) * (numPlayers - 1);
+    return health;
+  } else {
+    let health = x.NormalHealth;
+    const multiplier = x.InsaneMultiplier ?? 10;
+    health *= multiplier;
+    if (numPlayers > 1) health += (x.PerPlayerHealthIncrease ?? 0) * multiplier * (numPlayers - 1);
+    return health;
+  }
 }
 
 export default function (strength, normal, numPlayers) {
   return Object.entries(enemies)
     .filter(([, x]) => x.NormalHealth)
     .map(([name, x]) => {
-      const hits = formatHits(x, strength, normal, numPlayers);
-      return `${name} in <strong>${Math.round(hits)}</strong> hits`;
+      const health = normal ? getHealth(x, numPlayers) : getHealthInsane(x, numPlayers);
+      const hits = x.oneDamagePerHit ? health : calculateHits(health, x.Physical ?? 0, strength);
+      return `${name} with ${health}hp in <strong>${Math.round(hits)}</strong> hits`;
     })
     .join('\n');
 }

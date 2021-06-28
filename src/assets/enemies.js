@@ -79,8 +79,10 @@ export default {
     Poison: -20,
     Ice: -40,
     NormalHealth: 350,
+    InsaneHealth: 2150,
     InsaneMultiplier: 6,
     PerPlayerHealthIncrease: 190,
+    PerPlayerHealthIncreaseInsane: 550,
   },
   Slime: {
     Physical: -20,
@@ -178,16 +180,7 @@ export default {
     NormalHealth: 200,
     PerPlayerHealthIncrease: 40,
   },
-  'Skeleton (1st part of Marsh)': {
-    Physical: -10,
-    Fire: -30,
-    Electric: -30,
-    Poison: -90,
-    Ice: -30,
-    NormalHealth: 170,
-    PerPlayerHealthIncrease: 34,
-  },
-  'Skeleton (2nd part of Marsh AND LAVA WORLD)': {
+  Skeleton: {
     Fire: -20,
     Electric: -20,
     Poison: -80,
@@ -195,13 +188,13 @@ export default {
     NormalHealth: 170,
     PerPlayerHealthIncrease: 34,
   },
-  'Skeleton (The 2 Gods)': {
+  'Skeleton (Beginning of Marsh)': {
     Physical: -10,
     Fire: -30,
     Electric: -30,
-    Poison: -40,
+    Poison: -90,
     Ice: -30,
-    NormalHealth: 170,
+    NormalHealth: 270,
     PerPlayerHealthIncrease: 34,
   },
   'Volcano Boss': {
@@ -408,13 +401,14 @@ export default {
     InsaneMultiplier: 3,
     PerPlayerHealthIncrease: 100,
   },
-  // "Clown Painting": {
-  //   Poison: 40,
-  //   Ice: 40,
-  //   NormalHealth: "Random",
-  //   InsaneMultiplier: 3,
-  //   PerPlayerHealthIncrease: 100,
-  // },
+  'Clown Painting': {
+    Poison: 40,
+    Ice: 40,
+    // NormalHealth: "Random",
+    NormalHealth: 400,
+    InsaneMultiplier: 3,
+    PerPlayerHealthIncrease: 100,
+  },
   'Octupus Painting': {
     Poison: -40,
     Ice: -40,
@@ -467,6 +461,60 @@ export default {
     NormalHealth: 3000,
     InsaneMultiplier: 3,
     PerPlayerHealthIncrease: 1000,
+  },
+  'Necromancer Barbarian': {
+    NormalHealth: 150,
+    PerPlayerHealthIncrease: 30,
+  },
+  'Necromancer Thief': {
+    NormalHealth: 150,
+    PerPlayerHealthIncrease: 30,
+  },
+  'Necromancer Bear': {
+    NormalHealth: 200,
+    PerPlayerHealthIncrease: 40,
+  },
+  'Necromancer Conehead': {
+    NormalHealth: 270,
+    PerPlayerHealthIncrease: 54,
+  },
+  'Necromancer Fire Demon': {
+    NormalHealth: 300,
+    PerPlayerHealthIncrease: 60,
+  },
+  'Necromancer Fencer': {
+    NormalHealth: 290,
+    PerPlayerHealthIncrease: 58,
+  },
+  'Necromancer Ninja': {
+    NormalHealth: 250,
+    PerPlayerHealthIncrease: 50,
+  },
+  'Necromancer Saracen': {
+    NormalHealth: 290,
+    PerPlayerHealthIncrease: 58,
+  },
+  'Necromancer Royal Guard': {
+    NormalHealth: 320,
+    PerPlayerHealthIncrease: 64,
+  },
+  'Necromancer Alien': {
+    NormalHealth: 101,
+    InsaneHealth: 1001,
+    PerPlayerHealthIncrease: 20,
+    PerPlayerHealthIncreaseInsane: 200,
+  },
+  'Necromancer Snakey': {
+    NormalHealth: 350,
+    PerPlayerHealthIncrease: 70,
+  },
+  'Necromancer Iceskimo': {
+    NormalHealth: 430,
+    PerPlayerHealthIncrease: 86,
+  },
+  'Necromancer Brute': {
+    NormalHealth: 350,
+    PerPlayerHealthIncrease: 70,
   },
   Necromancer: {
     NormalHealth: 4000,

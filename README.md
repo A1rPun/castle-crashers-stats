@@ -10,18 +10,5 @@
 
 ## TODO
 
-- fix skeleton data
-- fix bear boss data
-- add necromancer waves data
-- [more weapons](https://castlecrashers.fandom.com/wiki/Weapons)
-- [formulas](https://gamefaqs.gamespot.com/xbox360/934458-castle-crashers/faqs/54118)
-
-```
-{
-  "Enemy": "Bear Boss",
-  "Insane1p": 2150,
-  "Insane2p": 2700,
-  "Insane3p": 3250,
-  "Insane4p": 3800,
-},
-```
+- [more weapons](https://castlecrashers.fandom.com/wiki/Weapons) and weapon images
+- pet images
