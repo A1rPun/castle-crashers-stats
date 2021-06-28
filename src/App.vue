@@ -389,6 +389,8 @@ export default {
       if (agi) this.agility = parseInt(agi, 10);
       const weap = urlParams.get('weap');
       if (weap) this.defaultWeapon = weap;
+      const crit = urlParams.get('crit');
+      if (crit) this.doCrit = true;
       const orb = urlParams.get('orb');
       if (orb) this.defaultPet = orb;
       const combo = urlParams.get('combo');
@@ -396,7 +398,7 @@ export default {
     },
     setUrloptions() {
       const urlParams = new URLSearchParams();
-      if (this.OG) urlParams.set('OG', this.OG);
+      if (this.OG) urlParams.set('OG', 1);
       if (this.mode > 1) urlParams.set('mode', this.mode);
       if (this.numPlayers > 1) urlParams.set('players', this.numPlayers);
       if (this.level > 1) urlParams.set('lvl', this.level);
@@ -406,6 +408,7 @@ export default {
       if (this.agility > 1) urlParams.set('agi', this.agility);
       if (this.weapon?.name !== 'Alien Gun') urlParams.set('weap', this.weapon.name);
       if (this.pet?.name !== 'None') urlParams.set('orb', this.pet.name);
+      if (this.doCrit) urlParams.set('crit', 1);
       if (this.combo !== 'a xyy') urlParams.set('combo', this.combo);
       window.history.replaceState(
         {},
