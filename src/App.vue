@@ -179,6 +179,12 @@ Example: RTA XYY XYY XY XYY XY XY XY
         <strong>{{ infusionDamage * 2 }}</strong> piercing
       </div>
       <div>
+        Fire DoT: <strong>{{ dotDamage }}</strong>
+      </div>
+      <div>
+        Poison DoT (3 hits): <strong>{{ dotDamage * 3 }}</strong>
+      </div>
+      <div>
         Arrow damage: <strong>{{ arrowDamage }}</strong>
       </div>
       <div v-if="this.mode < 3">
@@ -201,8 +207,24 @@ Example: RTA XYY XYY XY XYY XY XY XY
         Run speed: <strong>x{{ runSpeed }}</strong>
       </div>
       <h3>Enemy hits</h3>
-      <div class="CCR" v-html="output"></div>
-      <div class="CC"></div>
+      <div class="text_output" v-html="output"></div>
+      <div>
+        <h3>Unlocked melee combo's</h3>
+        <div>Throw</div>
+        <div>Stomp</div>
+        <div v-if="mode === 3 || level >= 2">Spin attack</div>
+        <div v-if="mode === 3 || level >= 4">Sprint attack</div>
+        <div v-if="mode === 3 || level >= 8">Uppercut</div>
+        <div v-if="mode === 3 || level >= 16">Headbutt</div>
+        <div v-if="mode === 3 || level >= 32">Slashing Headbutt</div>
+        <div v-if="mode === 3 || (level >= 50 && magic >= 15)">Drill</div>
+        <h3>Unlocked magic combo's</h3>
+        <div>Splash magic</div>
+        <div v-if="mode === 3 || magic >= 5">Projectile magic</div>
+        <div v-if="mode === 3 || magic >= 10">Air Projectile magic</div>
+        <div v-if="mode === 3 || magic >= 15">Elemental Infusion</div>
+        <div v-if="mode === 3 || magic >= 20">Magic jump</div>
+      </div>
     </div>
   </div>
 </template>
@@ -303,6 +325,9 @@ export default {
     },
     infusionDamage() {
       return this.normalDamage + this.magicDamage;
+    },
+    dotDamage() {
+      return Math.floor(3 + this.magicDamage * 0.4 + this.level * 0.1);
     },
     arrowDamage() {
       return 2 + Math.floor(this.totalAgility);
@@ -500,7 +525,7 @@ body {
   flex-direction: column;
 }
 
-.CCR {
+.text_output {
   white-space: pre;
 }
 
