@@ -110,7 +110,7 @@
         <span v-if="petAgility">agility:{{ petAgility }}</span>
       </div>
       <div>
-        <h3>Combo (🧪 experimental)</h3>
+        <h3>Combo</h3>
         <div>
           <input type="text" v-model="combo" @change="updateStats" />
           <pre>
@@ -191,7 +191,7 @@ Example: RTA XYY XYY XY XYY XY XY XY
         Bomb damage: <strong>{{ bombDamage }}</strong>
       </div>
       <div>
-        🧪 Combo damage: <strong>{{ comboDamage.reduce((prev, cur) => prev + cur, 0) }}</strong>
+        Combo damage: <strong>{{ comboDamage.reduce((prev, cur) => prev + cur, 0) }}</strong>
       </div>
       <h3>Defense</h3>
       <div>
@@ -457,6 +457,7 @@ export default {
         this.combo,
         this.normalDamage,
         this.heavyDamage,
+        this.throwDamage,
         this.magicDamage,
         this.splashDamage,
         this.infusionDamage,
