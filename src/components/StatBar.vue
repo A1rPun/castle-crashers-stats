@@ -4,10 +4,10 @@
       <span
         v-for="item in stats"
         :key="item"
-        :class="{ lit: item <= value }"
+        :class="{ lit: item <= actualValue }"
         @click="changed(item)"
         @mouseenter="mouseEnter(item)"
-        @mouseleave="mouseLeave(value)"
+        @mouseleave="mouseLeave(actualValue)"
       ></span>
       <div class="center">{{ displayValue }}</div>
     </div>
@@ -23,12 +23,14 @@ export default {
   },
   data() {
     return {
+      actualValue: this.value,
       displayValue: this.value,
       stats: Array.from({ length: 25 }, (_, i) => i + 1),
     };
   },
   watch: {
     value(newValue) {
+      this.actualValue = newValue;
       this.displayValue = newValue;
     },
   },
@@ -36,8 +38,8 @@ export default {
     changed(value) {
       if (this.disabled) return;
       this.displayValue = value;
-      this.value = value;
-      this.$emit('input', this.value);
+      this.actualValue = value;
+      this.$emit('input', this.actualValue);
       this.$emit('change');
     },
     mouseEnter(val) {

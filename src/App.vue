@@ -223,20 +223,20 @@ Example: RTA XYY XYY XY XYY XY XY XY
       <div class="text_output" v-html="output"></div>
       <div>
         <h3>Unlocked melee combo's</h3>
-        <div>Throw</div>
-        <div>Stomp</div>
-        <div v-if="mode === 3 || level >= 2">Spin attack</div>
-        <div v-if="mode === 3 || level >= 4">Sprint attack</div>
-        <div v-if="mode === 3 || level >= 8">Uppercut</div>
-        <div v-if="mode === 3 || level >= 16">Headbutt</div>
-        <div v-if="mode === 3 || level >= 32">Slashing Headbutt</div>
-        <div v-if="level >= 50 && magic >= 15">Drill</div>
+        <div>Throw (H)</div>
+        <div>Stomp (H)</div>
+        <div v-if="mode === 3 || level >= 2">Spin attack (JJ)</div>
+        <div v-if="mode === 3 || level >= 4">Sprint attack (L or H)</div>
+        <div v-if="mode === 3 || level >= 8">Uppercut (LH)</div>
+        <div v-if="mode === 3 || level >= 16">Headbutt (LLH)</div>
+        <div v-if="mode === 3 || level >= 32">Slashing Headbutt (LLHH)</div>
+        <div v-if="mode !== 3 && level >= 50 && magic >= 15">Drill (LLLHH)</div>
         <h3>Unlocked magic combo's</h3>
-        <div>Splash magic</div>
-        <div v-if="mode === 3 || magic >= 5">Projectile magic</div>
-        <div v-if="mode === 3 || magic >= 10">Air Projectile magic</div>
-        <div v-if="mode === 3 || magic >= 15">Elemental Infusion</div>
-        <div v-if="mode === 3 || magic >= 20">Magic jump</div>
+        <div>Splash magic (MH)</div>
+        <div v-if="mode === 3 || magic >= 5">Projectile magic (MU)</div>
+        <div v-if="mode === 3 || magic >= 10">Air Projectile magic (JMH or JMU)</div>
+        <div v-if="mode === 3 || magic >= 15">Elemental Infusion (LLLH)</div>
+        <div v-if="mode === 3 || magic >= 20">Magic jump (MJ)</div>
       </div>
     </div>
   </div>
