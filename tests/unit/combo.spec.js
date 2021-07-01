@@ -9,24 +9,6 @@ function testCombo(combo) {
   return toNum(parseCombo(combo, 20, 25, 27, 30, 15, 50, 10))
 }
 
-/*
-<h3>Unlocked melee combo's</h3>
-<div>Throw</div>
-<div>Stomp</div>
-<div v-if="mode === 3 || level >= 2">Spin attack</div>
-<div v-if="mode === 3 || level >= 4">Sprint attack</div>
-<div v-if="mode === 3 || level >= 8">Uppercut</div>
-<div v-if="mode === 3 || level >= 16">Headbutt</div>
-<div v-if="mode === 3 || level >= 32">Slashing Headbutt</div>
-<div v-if="mode === 3 || (level >= 50 && magic >= 15)">Drill</div>
-<h3>Unlocked magic combo's</h3>
-<div>Splash magic</div>
-<div v-if="mode === 3 || magic >= 5">Projectile magic</div>
-<div v-if="mode === 3 || magic >= 10">Air Projectile magic</div>
-<div v-if="mode === 3 || magic >= 15">Elemental Infusion</div>
-<div v-if="mode === 3 || magic >= 20">Magic jump</div>
-*/
-
 describe('parseCombo.js', () => {
   it('Parses light attack', () => {
     expect(testCombo('x')).toBe(20);

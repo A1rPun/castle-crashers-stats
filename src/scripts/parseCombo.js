@@ -54,7 +54,6 @@ export default (
         acc.push(doMagic ? baseMagicDmg : arrowDmg);
       } else if (cur === 'x' || cur === 'l') {
         acc.push(baseDmg);
-      } else if (cur === 'rt' || cur === 'm') {
       }
       return acc;
     }, []);
