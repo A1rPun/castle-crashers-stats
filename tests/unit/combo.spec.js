@@ -40,6 +40,12 @@ describe('parseCombo.js', () => {
     expect(testCombo('hh')).toBe(65);
   });
 
+  it('Parses heavy slam', () => {
+    // TODO: Confirm ingame
+    expect(testCombo('a y')).toBe(20);
+    expect(testCombo('j h')).toBe(20);
+  });
+
   it('Parses jumping sword spin', () => {
     expect(testCombo('a yy')).toBe(60);
     expect(testCombo('j hh')).toBe(60);

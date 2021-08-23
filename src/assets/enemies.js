@@ -62,6 +62,12 @@ export default {
     Ice: -40,
     NormalHealth: 600,
     PerPlayerHealthIncrease: 300,
+    DamageReduction: 4,
+  },
+  'Catfish Stunned': {
+    Ice: -40,
+    NormalHealth: 600,
+    PerPlayerHealthIncrease: 300,
   },
   Bear: {
     Physical: -20,
@@ -99,7 +105,7 @@ export default {
     Electric: 20,
     Poison: 20,
     Ice: 20,
-    NormalHealth: 75,
+    NormalHealth: 125,
     PerPlayerHealthIncrease: 15,
   },
   Pipistrello: {
@@ -240,6 +246,11 @@ export default {
     NormalHealth: 400,
     PerPlayerHealthIncrease: 200,
   },
+  'Industrial Prince': {
+    oneDamagePerHit: true,
+    NormalHealth: 1,
+    InsaneMultiplier: 1,
+  },
   Ninja: {
     Fire: -10,
     Electric: -10,
@@ -343,6 +354,11 @@ export default {
     Ice: -20,
     NormalHealth: 2250,
     PerPlayerHealthIncrease: 750,
+  },
+  Snake: {
+    oneDamagePerHit: true,
+    NormalHealth: 1,
+    InsaneMultiplier: 1,
   },
   Stoveface: {
     Physical: -30,

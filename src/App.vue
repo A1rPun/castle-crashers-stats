@@ -121,18 +121,23 @@
       <div>
         <h3>Combo</h3>
         <div>
-          <input type="text" v-model="combo" @change="updateStats" />
+          <input type="text" v-model="combo" @change="updateStats" placeholder="Example: j hhll" />
           <pre>
 x  l = light attack
 y  h = heavy attack
 a  j = jump
 b  u = use item (arrow)
 rt m = magic
-
-Example: j lhl
-Example: RTA XYY XYY XY XYY XY XY XY
           </pre>
         </div>
+      </div>
+      <div>
+        <h3>Enemy hits</h3>
+        <select v-model="enemyHits" @change="updateStats">
+          <option v-for="eho in enemyHitOptions" :value="eho" :key="eho">
+            {{ eho }}
+          </option>
+        </select>
       </div>
     </div>
     <div class="output">
@@ -199,8 +204,8 @@ Example: RTA XYY XYY XY XYY XY XY XY
       <div v-if="this.mode < 3">
         Bomb damage: <strong>{{ bombDamage }}</strong>
       </div>
-      <div>
-        Combo damage: <strong>{{ comboDamage.reduce((prev, cur) => prev + cur, 0) }}</strong>
+      <div v-if="totalComboDamage">
+        Combo damage: <strong>{{ totalComboDamage }}</strong>
       </div>
       <h3>Defense</h3>
       <div>
@@ -221,23 +226,36 @@ Example: RTA XYY XYY XY XYY XY XY XY
       </div>
       <h3>Enemy hits</h3>
       <div class="text_output" v-html="output"></div>
-      <div>
-        <h3>Unlocked melee combo's</h3>
-        <div>Throw (H)</div>
-        <div>Stomp (H)</div>
-        <div v-if="mode === 3 || level >= 2">Spin attack (JJ)</div>
-        <div v-if="mode === 3 || level >= 4">Sprint attack (L or H)</div>
-        <div v-if="mode === 3 || level >= 8">Uppercut (LH)</div>
-        <div v-if="mode === 3 || level >= 16">Headbutt (LLH)</div>
-        <div v-if="mode === 3 || level >= 32">Slashing Headbutt (LLHH)</div>
-        <div v-if="mode !== 3 && level >= 50 && magic >= 15">Drill (LLLHH)</div>
-        <h3>Unlocked magic combo's</h3>
-        <div>Splash magic (MH)</div>
-        <div v-if="mode === 3 || magic >= 5">Projectile magic (MU)</div>
-        <div v-if="mode === 3 || magic >= 10">Air Projectile magic (JMH or JMU)</div>
-        <div v-if="mode === 3 || magic >= 15">Elemental Infusion (LLLH)</div>
-        <div v-if="mode === 3 || magic >= 20">Magic jump (MJ)</div>
+      <h3>Unlocked melee combo's</h3>
+      <div>Throw (H)</div>
+      <div>Stomp (H)</div>
+      <div v-if="mode === 3 || level >= 2">Spin attack (JJ)</div>
+      <div v-if="mode === 3 || level >= 4">Sprint attack (L or H)</div>
+      <div v-if="mode === 3 || level >= 8">Uppercut (LH)</div>
+      <div v-if="mode === 3 || level >= 16">Headbutt (LLH)</div>
+      <div v-if="mode === 3 || level >= 32">Slashing Headbutt (LLHH)</div>
+      <div v-if="mode !== 3 && level >= 50 && magic >= 15">Drill (LLLHH)</div>
+      <h3>Unlocked magic combo's</h3>
+      <div>Splash magic (MH)</div>
+      <div v-if="mode === 3 || magic >= 5">Projectile magic (MU)</div>
+      <div v-if="mode === 3 || magic >= 10">Air Projectile magic (JMH or JMU)</div>
+      <div v-if="mode === 3 || magic >= 15">Elemental Infusion (LLLH)</div>
+      <div v-if="mode === 3 || magic >= 20">Magic jump (MJ)</div>
+      <h3>Other Damage</h3>
+      <div>Spin attack damage: <strong>1</strong></div>
+      <div v-if="mode !== 3">Fall damage: <strong>7</strong></div>
+      <div v-if="mode !== 3">Wall damage: <strong>5</strong></div>
+      <div v-if="mode !== 3">Domino damage: <strong>1</strong> + <strong>2</strong> * enemies</div>
+      <div>Running mount damage: <strong>1</strong></div>
+      <div>Mount damage spit: <strong v-if="mode === 3">9</strong><strong v-else>?</strong></div>
+      <div>Mount damage snap: <strong v-if="mode === 3">9</strong><strong v-else>?</strong></div>
+      <div v-if="mode !== 3">
+        Shovel damage: <strong>{{ shovelDamage }}</strong>
       </div>
+      <div v-if="mode !== 3">
+        Horn damage: <strong>{{ hornDamage }}</strong>
+      </div>
+      <div v-if="mode !== 3">Boomerang damage: <strong>1</strong></div>
     </div>
   </div>
 </template>
@@ -289,9 +307,7 @@ export default {
       return (this.OG ? this.pet?.ccAgility ?? this.pet?.agility : this.pet?.agility) ?? 0;
     },
     extraStrength() {
-      return (
-        this.weaponStrength + this.petStrength + (this.mode === 3 ? arena.Level : this.level) * 0.1
-      );
+      return this.weaponStrength + this.petStrength;
     },
     extraMagic() {
       return this.weaponMagic + this.petMagic;
@@ -304,7 +320,11 @@ export default {
     },
     totalStrength() {
       return Math.max(
-        Math.floor((this.mode === 3 ? arena.Strength : this.strength) + this.extraStrength),
+        Math.floor(
+          (this.mode === 3 ? arena.Strength : this.strength) +
+            this.extraStrength +
+            (this.mode === 3 ? arena.Level : this.level) * 0.1
+        ),
         1
       );
     },
@@ -327,14 +347,27 @@ export default {
     totalAgility() {
       return Math.max((this.mode === 3 ? arena.Agility : this.agility) + this.extraAgility, 1);
     },
-    normalAttack() {
-      return (this.mode === 3 ? arena.Strength : this.strength) + basestats.normal;
+    normalDamage() {
+      return Math.floor(
+        basestats.normal +
+          ((this.mode === 3 ? arena.Strength : this.strength) +
+            this.extraStrength +
+            (this.mode === 3 ? arena.Level : this.level) * 0.1)
+      );
     },
-    heavyAttack() {
-      return (this.mode === 3 ? arena.Strength : this.strength) * 1.15 + basestats.heavy;
+    heavyDamage() {
+      return Math.floor(
+        basestats.heavy +
+          ((this.mode === 3 ? arena.Strength : this.strength) + this.extraStrength) * 1.15 +
+          (this.mode === 3 ? arena.Level : this.level) * 0.1
+      );
     },
-    throwAttack() {
-      return (this.mode === 3 ? arena.Strength : this.strength) * 1.2 + basestats.throw;
+    throwDamage() {
+      return Math.floor(
+        basestats.throw +
+          ((this.mode === 3 ? arena.Strength : this.strength) + this.extraStrength) * 1.2 +
+          (this.mode === 3 ? arena.Level : this.level) * 0.1
+      );
     },
     magicDamage() {
       return Math.floor(
@@ -350,17 +383,25 @@ export default {
     },
     dotDamage() {
       return Math.floor(
-        3 + this.magicDamage * 0.4 + (this.mode === 3 ? arena.Level : this.level) * 0.1
+        basestats.magicDoT +
+          this.magicDamage * 0.4 +
+          (this.mode === 3 ? arena.Level : this.level) * 0.1
       );
     },
     healing() {
       return Math.round(this.magicDamage * 0.25);
     },
     arrowDamage() {
-      return 2 + Math.floor(this.totalAgility);
+      return basestats.arrow + Math.floor(this.totalAgility);
     },
     bombDamage() {
       return (this.magicDamage < this.throwDamage ? this.throwDamage : this.magicDamage) * 2;
+    },
+    shovelDamage() {
+      return this.normalDamage + this.heavyDamage;
+    },
+    hornDamage() {
+      return this.throwDamage;
     },
     spendStatPoints() {
       return this.strength + this.magic + this.defense + this.agility - 4;
@@ -383,6 +424,9 @@ export default {
     experience() {
       return this.level === 1 ? 0 : ((this.level - 1) * ((this.level - 2) * 20 + 380)) / 2 + 1;
     },
+    totalComboDamage() {
+      return this.comboDamage?.reduce((prev, cur) => prev + cur, 0);
+    },
   },
   data() {
     return {
@@ -394,27 +438,57 @@ export default {
       magic: 1,
       defense: 1,
       agility: 1,
-      combo: 'a xyy',
+      combo: 'j hhll',
       defaultWeapon: 'Alien Gun',
       weapon: {},
       weapons,
       defaultPet: 'None',
       pet: {},
       pets,
-      normalDamage: 0,
-      heavyDamage: 0,
-      throwDamage: 0,
       comboDamage: [],
       output: '',
       doCrit: 0,
+      enemyHits: 'Light attack',
+      enemyHitOptions: [
+        'Light attack',
+        'Heavy attack',
+        'Throw',
+        'Stomp',
+        'Arrow',
+        'Bomb',
+        'Shovel',
+        'Horn',
+        'Combo',
+      ],
     };
   },
   methods: {
-    calcDamage: function (baseAttack) {
-      return Math.floor(baseAttack + this.extraStrength);
-    },
     calcArenaDamage: function (baseDamage) {
-      return Math.round(calculateDamage(-10, baseDamage));
+      return Math.floor(calculateDamage(-10, baseDamage));
+    },
+    arenaOutput() {
+      const arenaPlayer = formatEnemyHits(
+        'Arena player',
+        arena,
+        this.getDamageList(),
+        1,
+        1,
+        this.doCrit ? (this.doCrit === 1 ? this.weaponCrit : 100) : 0
+      );
+      return `${arenaPlayer}
+${this.calcArenaDamage(this.normalDamage)} normal damage
+${this.calcArenaDamage(this.heavyDamage)} heavy damage
+${this.calcArenaDamage(this.throwDamage)} throw damage
+${this.calcArenaDamage(this.splashDamage)} splash magic damage
+${this.calcArenaDamage(this.magicDamage)} projectile/jump magic damage
+${
+  this.comboDamage
+    ? `${this.comboDamage.reduce(
+        (acc, cur) => acc + this.calcArenaDamage(cur),
+        0
+      )} combo damage with ${this.comboDamage.length} hits`
+    : ''
+}`;
     },
     getUrlOptions() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -457,19 +531,25 @@ export default {
       if (this.weapon?.name !== 'Alien Gun') urlParams.set('weap', this.weapon.name);
       if (this.pet?.name !== 'None') urlParams.set('orb', this.pet.name);
       if (this.doCrit) urlParams.set('crit', this.doCrit);
-      if (this.combo && this.combo !== 'a xyy') urlParams.set('combo', this.combo);
+      if (this.combo && this.combo !== 'j hhll') urlParams.set('combo', this.combo);
       window.history.replaceState(
         {},
         '',
         window.location.pathname + (urlParams.toString() ? '?' + urlParams : '')
       );
     },
+    getDamageList() {
+      if (this.enemyHits === 'Heavy attack') return [this.heavyDamage];
+      if (this.enemyHits === 'Throw') return [this.throwDamage];
+      if (this.enemyHits === 'Arrow') return [this.arrowDamage];
+      if (this.enemyHits === 'Bomb') return [this.bombDamage];
+      if (this.enemyHits === 'Shovel') return [this.shovelDamage];
+      if (this.enemyHits === 'Horn') return [this.hornDamage];
+      if (this.enemyHits === 'Combo') return this.comboDamage ?? [];
+      return [this.normalDamage];
+    },
     updateStats() {
       if (!this.weapon?.crit) this.doCrit = 0;
-      this.heavyDamage = this.calcDamage(this.heavyAttack);
-      this.throwDamage = this.calcDamage(this.throwAttack);
-      const damage = this.calcDamage(this.normalAttack);
-      this.normalDamage = damage;
       this.comboDamage = parseCombo(
         this.combo,
         this.normalDamage,
@@ -482,29 +562,13 @@ export default {
       );
       if (this.mode < 3)
         this.output = formatEnemies(
-          damage,
+          this.getDamageList(),
           this.mode === 1,
           this.numPlayers,
           this.doCrit ? (this.doCrit === 1 ? this.weaponCrit : 100) : 0
         );
       else {
-        const arenaPlayer = formatEnemyHits(
-          'Arena player',
-          arena,
-          damage,
-          1,
-          1,
-          this.doCrit ? (this.doCrit === 1 ? this.weaponCrit : 100) : 0
-        );
-        this.output = `${arenaPlayer}
-${this.calcArenaDamage(this.normalDamage)} normal damage
-${this.calcArenaDamage(this.heavyDamage)} heavy damage
-${this.calcArenaDamage(this.throwDamage)} throw damage
-${Math.floor(calculateDamage(-10, this.splashDamage))} splash magic damage
-${this.calcArenaDamage(this.magicDamage)} projectile/jump magic damage
-${this.comboDamage.reduce((acc, cur) => acc + this.calcArenaDamage(cur), 0)} combo damage with ${
-          this.comboDamage.length
-        } hits`;
+        this.output = this.arenaOutput();
       }
       this.setUrloptions();
     },

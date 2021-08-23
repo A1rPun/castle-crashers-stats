@@ -1,6 +1,6 @@
 'use strict';
 import enemies from '../assets/enemies.js';
-import calculateHits from './calculateHits.js';
+import calculateDamage from './calculateDamage.js';
 
 function getHealth(x, numPlayers) {
   let health = x.NormalHealth;
@@ -22,10 +22,16 @@ function getHealthInsane(x, numPlayers) {
   return health;
 }
 
-export function formatEnemyHits(name, enemy, strength, normal, numPlayers, critPercent) {
+export function formatEnemyHits(name, enemy, damage, normal, numPlayers, critPercent) {
   const health = normal ? getHealth(enemy, numPlayers) : getHealthInsane(enemy, numPlayers);
-  let hits = enemy.oneDamagePerHit ? health : calculateHits(health, enemy.Physical ?? 0, strength);
+  const comboDamage = damage.reduce(
+    (acc, cur) => acc + calculateDamage(enemy.Physical ?? 0, cur),
+    0
+  );
+  let hits = enemy.oneDamagePerHit ? health : Math.ceil(health / comboDamage) * damage.length;
   let criticalHits;
+
+  if (enemy.DamageReduction) hits *= enemy.DamageReduction;
 
   if (critPercent === 100) {
     hits /= 4;
@@ -36,13 +42,19 @@ export function formatEnemyHits(name, enemy, strength, normal, numPlayers, critP
 
   return `${name} ${health}hp in <strong>${Math.ceil(hits)}</strong> ${
     critPercent === 100 ? 'critical ' : ''
-  }hits${criticalHits ? ` with ${Math.ceil(criticalHits)} critical` : ''}`;
+  }hits${criticalHits ? ` with ${Math.ceil(criticalHits)} critical` : ''}${
+    damage.length > 1
+      ? ` ${Math.ceil(
+          enemy.oneDamagePerHit ? health / damage.length : hits / damage.length
+        )} combo's`
+      : ''
+  }`;
 }
 
-export function formatEnemies(strength, normal, numPlayers, critPercent) {
+export function formatEnemies(damage, normal, numPlayers, critPercent) {
   return Object.entries(enemies)
     .filter(([, x]) => x.NormalHealth)
-    .map(([name, x]) => formatEnemyHits(name, x, strength, normal, numPlayers, critPercent))
+    .map(([name, x]) => formatEnemyHits(name, x, damage, normal, numPlayers, critPercent))
     .join('\n');
 }
 

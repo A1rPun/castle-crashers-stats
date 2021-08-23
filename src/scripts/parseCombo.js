@@ -6,9 +6,10 @@ export default (
   baseMagicDmg,
   splashDmg,
   infusionDmg,
-  arrowDmg
+  arrowDmg,
+  spinDamage = 1
 ) => {
-  if (!combo.toLowerCase().match(/^x|y|a|b|rt|l|h|j|u|m|\s+$/)) return 0;
+  if (!combo.toLowerCase().match(/^x|y|a|b|rt|l|h|j|u|m|\s+$/)) return [];
   let inAir = false;
 
   return combo
@@ -19,7 +20,7 @@ export default (
 
       if (cur === 'a' || cur === 'j') {
         if (!inAir && doMagic) acc.push(baseMagicDmg);
-        else if (inAir) acc.push(5); // 1 ?
+        else if (inAir) acc.push(spinDamage);
         inAir = true;
       } else if (cur === 'y' || cur === 'h') {
         const doHeavy =

@@ -12,3 +12,5 @@
 
 - [more weapons](https://castlecrashers.fandom.com/wiki/Weapons) and weapon images
 - pet images
+- enemy damage (hits till death)
+- add characters (for fire/poison/ice/electric resistance)
