@@ -6,7 +6,7 @@ function toNum(combo) {
 }
 
 function testCombo(combo) {
-  return toNum(parseCombo(combo, 20, 25, 27, 30, 15, 50, 10))
+  return toNum(parseCombo(combo, 20, 25, 27, 30, 15, 50, 10, 5))
 }
 
 describe('parseCombo.js', () => {
