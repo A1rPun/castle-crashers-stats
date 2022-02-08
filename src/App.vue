@@ -613,13 +613,6 @@ body {
   padding: 0 32px 32px;
   overflow-x: hidden;
   background: rgb(102, 204, 102);
-  background: linear-gradient(
-    135deg,
-    rgba(102, 204, 102, 1) 0%,
-    rgba(254, 0, 0, 1) 33%,
-    rgba(101, 153, 255, 1) 66%,
-    rgba(254, 153, 0, 1) 100%
-  );
 }
 
 .stats {
