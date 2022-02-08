@@ -16,7 +16,7 @@ export default [
   { name: 'Cardboard Tube', level: 15, strength: -2, agility: 6 },
   { name: 'Chainsaw', level: 30, defense: 5, crit: 5, ccDefense: 4, ccCrit: 2 },
   { name: 'Chicken Stick', level: 5, magic: 2, defense: -1, agility: 1 },
-  { name: 'Club', level: 20, strength: 5, defense: 5, agility: -3 },
+  { name: 'Club', level: 20, strength: 5, defense: 5, agility: -3, ccAgility: -5, ccCrit: 1 },
   { name: 'Clunky Mace', level: 10, strength: 5, agility: -2 },
   { name: 'Dual Prong Sword', level: 20, strength: 3, defense: 3, crit: 1 },
   { name: 'Emerald Sword', magic: 3, agility: -1 },
