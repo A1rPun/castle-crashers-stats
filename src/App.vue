@@ -27,7 +27,7 @@
           <input type="radio" v-model="mode" :value="3" @change="updateStats" />
         </label>
       </div>
-      <div class="players" v-if="this.mode < 3">
+      <div class="players" v-if="!isArena">
         <h3>Number of players</h3>
         <label>
           <span>1p</span>
@@ -46,7 +46,7 @@
           <input type="radio" v-model="numPlayers" :value="4" @change="updateStats" />
         </label>
       </div>
-      <div class="stats" v-if="this.mode < 3">
+      <div class="stats" v-if="!isArena">
         <h3>Stats</h3>
         <label>
           <span>Level</span>
@@ -141,7 +141,7 @@ rt m = magic
       </div>
     </div>
     <div class="output">
-      <div v-if="this.mode < 3">
+      <div v-if="!isArena">
         <div v-if="(weapon.level || 1) > level">
           {{ weapon.name }} has a level requirement of <strong>{{ weapon.level }}</strong>
         </div>
@@ -156,7 +156,7 @@ rt m = magic
         </div>
       </div>
       <h3>Stats total</h3>
-      <div v-if="this.mode < 3">
+      <div v-if="!isArena">
         Exp: <strong>{{ experience }}</strong>
       </div>
       <div v-else>Level: <strong>30</strong></div>
@@ -174,7 +174,7 @@ rt m = magic
       </div>
       <h3>Damage</h3>
       <div>
-        Base attack damage: <strong>{{ normalDamage }}</strong>
+        Base attack damage: <strong>{{ lightDamage }}</strong>
       </div>
       <div>
         Base heavy attack damage: <strong>{{ heavyDamage }}</strong>
@@ -201,7 +201,7 @@ rt m = magic
       <div>
         Arrow damage: <strong>{{ arrowDamage }}</strong>
       </div>
-      <div v-if="this.mode < 3">
+      <div v-if="!isArena">
         Bomb damage: <strong>{{ bombDamage }}</strong>
       </div>
       <div v-if="totalComboDamage">
@@ -229,33 +229,33 @@ rt m = magic
       <h3>Unlocked melee combo's</h3>
       <div>Throw (H)</div>
       <div>Stomp (H)</div>
-      <div v-if="mode === 3 || level >= 2">Spin attack (JJ)</div>
-      <div v-if="mode === 3 || level >= 4">Sprint attack (L or H)</div>
-      <div v-if="mode === 3 || level >= 8">Uppercut (LH)</div>
-      <div v-if="mode === 3 || level >= 16">Headbutt (LLH)</div>
-      <div v-if="mode === 3 || level >= 32">Slashing Headbutt (LLHH)</div>
-      <div v-if="mode !== 3 && level >= 50 && magic >= 15">Drill (LLLHH)</div>
+      <div v-if="isArena || level >= 2">Spin attack (JJ)</div>
+      <div v-if="isArena || level >= 4">Sprint attack (L or H)</div>
+      <div v-if="isArena || level >= 8">Uppercut (LH)</div>
+      <div v-if="isArena || level >= 16">Headbutt (LLH)</div>
+      <div v-if="isArena || level >= 32">Slashing Headbutt (LLHH)</div>
+      <div v-if="!isArena && level >= 50 && magic >= 15">Drill (LLLHH)</div>
       <h3>Unlocked magic combo's</h3>
       <div>Splash magic (MH)</div>
-      <div v-if="mode === 3 || magic >= 5">Projectile magic (MU)</div>
-      <div v-if="mode === 3 || magic >= 10">Air Projectile magic (JMH or JMU)</div>
-      <div v-if="mode === 3 || magic >= 15">Elemental Infusion (LLLH)</div>
-      <div v-if="mode === 3 || magic >= 20">Magic jump (MJ)</div>
+      <div v-if="isArena || magic >= 5">Projectile magic (MU)</div>
+      <div v-if="isArena || magic >= 10">Air Projectile magic (JMH or JMU)</div>
+      <div v-if="isArena || magic >= 15">Elemental Infusion (LLLH)</div>
+      <div v-if="isArena || magic >= 20">Magic jump (MJ)</div>
       <h3>Other Damage</h3>
       <div>Spin attack damage: <strong>1</strong></div>
-      <div v-if="mode !== 3">Fall damage: <strong>7</strong></div>
-      <div v-if="mode !== 3">Wall damage: <strong>5</strong></div>
-      <div v-if="mode !== 3">Domino damage: <strong>1</strong> + <strong>2</strong> * enemies</div>
+      <div v-if="!isArena">Fall damage: <strong>7</strong></div>
+      <div v-if="!isArena">Wall damage: <strong>5</strong></div>
+      <div v-if="!isArena">Domino damage: <strong>1</strong> + <strong>2</strong> * enemies</div>
       <div>Running mount damage: <strong>1</strong></div>
-      <div>Mount damage spit: <strong v-if="mode === 3">9</strong><strong v-else>?</strong></div>
-      <div>Mount damage snap: <strong v-if="mode === 3">9</strong><strong v-else>?</strong></div>
-      <div v-if="mode !== 3">
+      <div>Mount damage spit: <strong v-if="isArena">9</strong><strong v-else>?</strong></div>
+      <div>Mount damage snap: <strong v-if="isArena">9</strong><strong v-else>?</strong></div>
+      <div v-if="!isArena">
         Shovel damage: <strong>{{ shovelDamage }}</strong>
       </div>
-      <div v-if="mode !== 3">
+      <div v-if="!isArena">
         Horn damage: <strong>{{ hornDamage }}</strong>
       </div>
-      <div v-if="mode !== 3">Boomerang damage: <strong>1</strong></div>
+      <div v-if="!isArena">Boomerang damage: <strong>1</strong></div>
     </div>
   </div>
 </template>
@@ -263,12 +263,14 @@ rt m = magic
 <script>
 import StatBar from './components/StatBar';
 import { formatEnemies, formatEnemyHits } from './scripts/formatStats.js';
-// import formatStats from './scripts/formatStats.js';
-import basestats from './assets/basestats.js';
 import arena from './assets/arena.js';
 import weapons from './assets/weapons.js';
 import pets from './assets/pets.js';
 import calculateDamage from './scripts/calculateDamage.js';
+import { lightDamage, heavyDamage, throwDamage } from './scripts/damage.js';
+import { arrowDamage } from './scripts/agility.js';
+import { health, resistance } from './scripts/defense.js';
+import { magic } from './scripts/magic.js';
 import parseCombo from './scripts/parseCombo.js';
 
 export default {
@@ -277,6 +279,9 @@ export default {
     StatBar,
   },
   computed: {
+    isArena() {
+      return this.mode === 3;
+    },
     weaponStrength() {
       return (
         (this.OG ? this.weapon?.ccStrength ?? this.weapon?.strength : this.weapon?.strength) ?? 0
@@ -306,99 +311,67 @@ export default {
     petAgility() {
       return (this.OG ? this.pet?.ccAgility ?? this.pet?.agility : this.pet?.agility) ?? 0;
     },
-    extraStrength() {
-      return this.weaponStrength + this.petStrength;
+    actualStrength() {
+      return (
+        (this.isArena ? arena.Strength : this.strength || 1) + this.weaponStrength + this.petStrength
+      );
     },
-    extraMagic() {
-      return this.weaponMagic + this.petMagic;
+    actualMagic() {
+      return (this.isArena ? arena.Magic : this.magic || 1) + this.weaponMagic + this.petMagic;
     },
-    extraDefense() {
-      return this.weaponDefense + this.petDefense;
+    actualDefense() {
+      return (this.isArena ? arena.Defense : this.defense || 1) + this.weaponDefense + this.petDefense;
     },
-    extraAgility() {
-      return this.weaponAgility + this.petAgility;
+    actualAgility() {
+      return (this.isArena ? arena.Agility : this.agility || 1) + this.weaponAgility + this.petAgility;
+    },
+    totalLevel() {
+      return this.isArena ? arena.Level : this.level;
     },
     totalStrength() {
-      return Math.max(
-        Math.floor(
-          (this.mode === 3 ? arena.Strength : this.strength) +
-            this.extraStrength +
-            (this.mode === 3 ? arena.Level : this.level) * 0.1
-        ),
-        1
-      );
+      return Math.floor(this.actualStrength + this.totalLevel * 0.1);
     },
     totalMagic() {
-      return Math.max(
-        Math.floor(
-          (this.mode === 3 ? arena.Magic : this.magic) +
-            this.extraMagic +
-            (this.mode === 3 ? arena.Level : this.level) * 0.1
-        ),
-        1
-      );
+      return Math.floor(this.actualMagic + this.totalLevel * 0.1);
     },
     totalDefense() {
-      return Math.max(
-        Math.floor((this.mode === 3 ? arena.Level : this.defense) + this.extraDefense),
-        1
-      );
+      return Math.floor(this.actualDefense);
     },
     totalAgility() {
-      return Math.max((this.mode === 3 ? arena.Agility : this.agility) + this.extraAgility, 1);
+      return Math.floor(this.actualAgility);
     },
-    normalDamage() {
-      return Math.floor(
-        basestats.normal +
-          ((this.mode === 3 ? arena.Strength : this.strength) +
-            this.extraStrength +
-            (this.mode === 3 ? arena.Level : this.level) * 0.1)
-      );
+    lightDamage() {
+      return lightDamage(this.totalLevel, this.actualStrength);
     },
     heavyDamage() {
-      return Math.floor(
-        basestats.heavy +
-          ((this.mode === 3 ? arena.Strength : this.strength) + this.extraStrength) * 1.15 +
-          (this.mode === 3 ? arena.Level : this.level) * 0.1
-      );
+      return heavyDamage(this.totalLevel, this.actualStrength);
     },
     throwDamage() {
-      return Math.floor(
-        basestats.throw +
-          ((this.mode === 3 ? arena.Strength : this.strength) + this.extraStrength) * 1.2 +
-          (this.mode === 3 ? arena.Level : this.level) * 0.1
-      );
+      return throwDamage(this.totalLevel, this.actualStrength);
     },
     magicDamage() {
-      return Math.floor(
-        Math.max((this.mode === 3 ? arena.Magic : this.magic) + this.extraMagic, 1) * 2 +
-          (this.mode === 3 ? arena.Level : this.level) * 0.1
-      );
+      return magic(this.totalLevel, this.actualMagic);
     },
     splashDamage() {
       return Math.ceil(this.magicDamage * 0.5);
     },
     infusionDamage() {
-      return this.normalDamage + this.magicDamage;
+      return this.lightDamage + this.magicDamage;
     },
     dotDamage() {
-      return Math.floor(
-        basestats.magicDoT +
-          this.magicDamage * 0.4 +
-          (this.mode === 3 ? arena.Level : this.level) * 0.1
-      );
+      return Math.floor(3 + this.magicDamage * 0.4 + this.totalLevel * 0.1);
     },
     healing() {
       return Math.round(this.magicDamage * 0.25);
     },
     arrowDamage() {
-      return basestats.arrow + Math.floor(this.totalAgility);
+      return arrowDamage(this.totalAgility);
     },
     bombDamage() {
       return (this.magicDamage < this.throwDamage ? this.throwDamage : this.magicDamage) * 2;
     },
     shovelDamage() {
-      return this.normalDamage + this.heavyDamage;
+      return this.lightDamage + this.heavyDamage;
     },
     hornDamage() {
       return this.throwDamage;
@@ -410,10 +383,10 @@ export default {
       return this.level >= 20 ? 38 + (Math.min(this.level, 78) - 20) : (this.level - 1) * 2;
     },
     health() {
-      return this.mode === 3 ? arena.NormalHealth : 69 + this.level * 3 + this.totalDefense * 28;
+      return this.isArena ? arena.NormalHealth : health(this.totalLevel, this.totalDefense);
     },
     resistance() {
-      return 40.5 + 0.5 * (this.totalDefense - 1);
+      return resistance(this.totalDefense);
     },
     damageTaken() {
       return Math.round((2 * (1 - this.resistance / 100)).toFixed(2) * 100);
@@ -476,7 +449,7 @@ export default {
         this.doCrit ? (this.doCrit === 1 ? this.weaponCrit : 100) : 0
       );
       return `${arenaPlayer}
-${this.calcArenaDamage(this.normalDamage)} normal damage
+${this.calcArenaDamage(this.lightDamage)} light damage
 ${this.calcArenaDamage(this.heavyDamage)} heavy damage
 ${this.calcArenaDamage(this.throwDamage)} throw damage
 ${this.calcArenaDamage(this.splashDamage)} splash magic damage
@@ -546,13 +519,13 @@ ${
       if (this.enemyHits === 'Shovel') return [this.shovelDamage];
       if (this.enemyHits === 'Horn') return [this.hornDamage];
       if (this.enemyHits === 'Combo') return this.comboDamage ?? [];
-      return [this.normalDamage];
+      return [this.lightDamage];
     },
     updateStats() {
       if (!this.weapon?.crit) this.doCrit = 0;
       this.comboDamage = parseCombo(
         this.combo,
-        this.normalDamage,
+        this.lightDamage,
         this.heavyDamage,
         this.throwDamage,
         this.magicDamage,
@@ -560,7 +533,7 @@ ${
         this.infusionDamage,
         this.arrowDamage
       );
-      if (this.mode < 3)
+      if (!this.isArena)
         this.output = formatEnemies(
           this.getDamageList(),
           this.mode === 1,
