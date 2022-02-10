@@ -161,10 +161,10 @@ rt m = magic
       </div>
       <div v-else>Level: <strong>30</strong></div>
       <div>
-        Strength: <strong>{{ totalStrength }}</strong>
+        Strength: <strong>{{ totalStrength + extraLevel }}</strong>
       </div>
       <div>
-        Magic: <strong>{{ totalMagic }}</strong>
+        Magic: <strong>{{ totalMagic + extraLevel }}</strong>
       </div>
       <div>
         Defense: <strong>{{ totalDefense }}</strong>
@@ -193,7 +193,7 @@ rt m = magic
         <strong>{{ infusionDamage * 2 }}</strong> piercing
       </div>
       <div>
-        Fire DoT: <strong>{{ dotDamage }}</strong>
+        Fire &amp; Electricity DoT: <strong>{{ dotDamage }}</strong>
       </div>
       <div>
         Poison DoT (3 hits): <strong>{{ dotDamage * 3 }}</strong>
@@ -270,7 +270,7 @@ import calculateDamage from './scripts/calculateDamage.js';
 import { lightDamage, heavyDamage, throwDamage } from './scripts/damage.js';
 import { arrowDamage } from './scripts/agility.js';
 import { health, resistance } from './scripts/defense.js';
-import { magic } from './scripts/magic.js';
+import { magic, magicSustain } from './scripts/magic.js';
 import parseCombo from './scripts/parseCombo.js';
 
 export default {
@@ -311,46 +311,43 @@ export default {
     petAgility() {
       return (this.OG ? this.pet?.ccAgility ?? this.pet?.agility : this.pet?.agility) ?? 0;
     },
-    actualStrength() {
-      return (
-        (this.isArena ? arena.Strength : this.strength || 1) + this.weaponStrength + this.petStrength
-      );
-    },
-    actualMagic() {
-      return (this.isArena ? arena.Magic : this.magic || 1) + this.weaponMagic + this.petMagic;
-    },
-    actualDefense() {
-      return (this.isArena ? arena.Defense : this.defense || 1) + this.weaponDefense + this.petDefense;
-    },
-    actualAgility() {
-      return (this.isArena ? arena.Agility : this.agility || 1) + this.weaponAgility + this.petAgility;
-    },
     totalLevel() {
       return this.isArena ? arena.Level : this.level;
     },
     totalStrength() {
-      return Math.floor(this.actualStrength + this.totalLevel * 0.1);
+      return (
+        (this.isArena ? arena.Strength : this.strength || 1) +
+        this.weaponStrength +
+        this.petStrength
+      );
     },
     totalMagic() {
-      return Math.floor(this.actualMagic + this.totalLevel * 0.1);
+      return (this.isArena ? arena.Magic : this.magic || 1) + this.weaponMagic + this.petMagic;
     },
     totalDefense() {
-      return Math.floor(this.actualDefense);
+      return (
+        (this.isArena ? arena.Defense : this.defense || 1) + this.weaponDefense + this.petDefense
+      );
     },
     totalAgility() {
-      return Math.floor(this.actualAgility);
+      return (
+        (this.isArena ? arena.Agility : this.agility || 1) + this.weaponAgility + this.petAgility
+      );
+    },
+    extraLevel() {
+      return Math.floor(this.totalLevel * 0.1);
     },
     lightDamage() {
-      return lightDamage(this.totalLevel, this.actualStrength);
+      return lightDamage(this.totalLevel, this.totalStrength);
     },
     heavyDamage() {
-      return heavyDamage(this.totalLevel, this.actualStrength);
+      return heavyDamage(this.totalLevel, this.totalStrength);
     },
     throwDamage() {
-      return throwDamage(this.totalLevel, this.actualStrength);
+      return throwDamage(this.totalLevel, this.totalStrength);
     },
     magicDamage() {
-      return magic(this.totalLevel, this.actualMagic);
+      return magic(this.totalLevel, this.totalMagic);
     },
     splashDamage() {
       return Math.ceil(this.magicDamage * 0.5);
@@ -359,7 +356,7 @@ export default {
       return this.lightDamage + this.magicDamage;
     },
     dotDamage() {
-      return Math.floor(3 + this.magicDamage * 0.4 + this.totalLevel * 0.1);
+      return magicSustain(this.totalLevel, this.totalMagic);
     },
     healing() {
       return Math.round(this.magicDamage * 0.25);
