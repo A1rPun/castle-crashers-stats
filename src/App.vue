@@ -67,7 +67,7 @@
         </div>
         <div>
           <span>Magic</span>
-          <StatBar v-model="magic" @change="updateStats"></StatBar>
+          <StatBar v-model="magic" @change="updateStats" interval="5"></StatBar>
         </div>
         <div>
           <span>Defense</span>
