@@ -27,24 +27,9 @@
           <input type="radio" v-model="mode" :value="3" @change="updateStats" />
         </label>
       </div>
-      <div class="players" v-if="!isArena">
+      <div class="players">
         <h3>Number of players</h3>
-        <label>
-          <span>1p</span>
-          <input type="radio" v-model="numPlayers" :value="1" @change="updateStats" />
-        </label>
-        <label>
-          <span> 2p</span>
-          <input type="radio" v-model="numPlayers" :value="2" @change="updateStats" />
-        </label>
-        <label>
-          <span> 3p</span>
-          <input type="radio" v-model="numPlayers" :value="3" @change="updateStats" />
-        </label>
-        <label>
-          <span> 4p</span>
-          <input type="radio" v-model="numPlayers" :value="4" @change="updateStats" />
-        </label>
+        <StatBar v-model="numPlayers" @change="updateStats" length="4"></StatBar>
       </div>
       <div class="stats" v-if="!isArena">
         <h3>Stats</h3>
@@ -119,7 +104,15 @@
         <span v-if="petAgility">agility:{{ petAgility }}</span>
       </div>
       <div>
-        <h3>Combo</h3>
+        <h3>Enemy hits</h3>
+        <select v-model="enemyHits" @change="updateStats">
+          <option v-for="eho in enemyHitOptions" :value="eho" :key="eho">
+            {{ eho }}
+          </option>
+        </select>
+      </div>
+      <div>
+        <h3>Combo (experimental)</h3>
         <div>
           <input type="text" v-model="combo" @change="updateStats" placeholder="Example: j hhll" />
           <pre>
@@ -130,14 +123,6 @@ b  u = use item (arrow)
 rt m = magic
           </pre>
         </div>
-      </div>
-      <div>
-        <h3>Enemy hits</h3>
-        <select v-model="enemyHits" @change="updateStats">
-          <option v-for="eho in enemyHitOptions" :value="eho" :key="eho">
-            {{ eho }}
-          </option>
-        </select>
       </div>
     </div>
     <div class="output">
@@ -160,37 +145,97 @@ rt m = magic
         Exp: <strong>{{ experience }}</strong>
       </div>
       <div v-else>Level: <strong>30</strong></div>
+      <details>
+        <summary>
+          Strength: <strong>{{ totalStrength + extraLevel }}</strong>
+        </summary>
+        <div>
+          <strong>{{ strength }}</strong> from stat
+        </div>
+        <div>
+          <strong>{{ weaponStrength }}</strong> from weapon
+        </div>
+        <div>
+          <strong>{{ petStrength }}</strong> from pet
+        </div>
+        <div>
+          <strong>{{ extraLevel }}</strong> from level
+        </div>
+      </details>
+      <details>
+        <summary>
+          Magic: <strong>{{ totalMagic + extraLevel }}</strong>
+        </summary>
+        <div>
+          <strong>{{ magic }}</strong> from stat
+        </div>
+        <div>
+          <strong>{{ weaponMagic }}</strong> from weapon
+        </div>
+        <div>
+          <strong>{{ petMagic }}</strong> from pet
+        </div>
+        <div>
+          <strong>{{ extraLevel }}</strong> from level
+        </div>
+      </details>
+      <details>
+        <summary>
+          Defense: <strong>{{ totalDefense }}</strong>
+        </summary>
+        <div>
+          <strong>{{ defense }}</strong> from stat
+        </div>
+        <div>
+          <strong>{{ weaponDefense }}</strong> from weapon
+        </div>
+        <div>
+          <strong>{{ petDefense }}</strong> from pet
+        </div>
+      </details>
+      <details>
+        <summary>
+          Agility: <strong>{{ totalAgility }}</strong>
+        </summary>
+        <div>
+          <strong>{{ agility }}</strong> from stat
+        </div>
+        <div>
+          <strong>{{ weaponAgility }}</strong> from weapon
+        </div>
+        <div>
+          <strong>{{ petAgility }}</strong> from pet
+        </div>
+      </details>
+      <h3>Melee damage</h3>
       <div>
-        Strength: <strong>{{ totalStrength + extraLevel }}</strong>
+        Light attack damage: <strong>{{ lightDamage }}</strong>
+        <span v-if="doCrit">, critical <strong>{{ lightDamage * 4 }}</strong></span>
       </div>
       <div>
-        Magic: <strong>{{ totalMagic + extraLevel }}</strong>
+        Heavy attack damage: <strong>{{ heavyDamage }}</strong>
+        <span v-if="doCrit">, critical <strong>{{ heavyDamage * 4 }}</strong></span>
       </div>
       <div>
-        Defense: <strong>{{ totalDefense }}</strong>
+        Throw damage: <strong>{{ throwDamage }}</strong>
+        <span v-if="doCrit">, critical <strong>{{ throwDamage * 4 }}</strong></span>
       </div>
-      <div>
-        Agility: <strong>{{ totalAgility }}</strong>
+      <div v-if="totalComboDamage">
+        Combo damage: <strong>{{ totalComboDamage }}</strong>
       </div>
-      <h3>Damage</h3>
-      <div>
-        Base attack damage: <strong>{{ lightDamage }}</strong>
-      </div>
-      <div>
-        Base heavy attack damage: <strong>{{ heavyDamage }}</strong>
-      </div>
-      <div>
-        Base throw damage: <strong>{{ throwDamage }}</strong>
-      </div>
-      <div>
-        Base magic damage (projectile/jump): <strong>{{ magicDamage }}</strong>
-      </div>
+      <h3>Magic damage</h3>
       <div>
         Splash magic damage: <strong>{{ splashDamage }}</strong>
+      </div>
+      <div v-if="magic >= 5">
+        Projectile magic damage: <strong>{{ magicDamage }}</strong>
       </div>
       <div v-if="magic >= 15">
         Elemental infusion damage: <strong>{{ infusionDamage }}</strong> or
         <strong>{{ infusionDamage * 2 }}</strong> piercing
+      </div>
+      <div v-if="magic >= 20">
+        Jump magic damage: <strong>{{ magicDamage }}</strong>
       </div>
       <div>
         Fire &amp; Electricity DoT: <strong>{{ dotDamage }}</strong>
@@ -198,28 +243,49 @@ rt m = magic
       <div>
         Poison DoT (3 hits): <strong>{{ dotDamage * 3 }}</strong>
       </div>
+      <!-- <div>
+        Magic regen: <strong>{{ magicRegen }}</strong>
+      </div>
       <div>
-        Arrow damage: <strong>{{ arrowDamage }}</strong>
-      </div>
-      <div v-if="!isArena">
-        Bomb damage: <strong>{{ bombDamage }}</strong>
-      </div>
-      <div v-if="totalComboDamage">
-        Combo damage: <strong>{{ totalComboDamage }}</strong>
-      </div>
+        Magic chain: <strong>{{ magicChain }}</strong>
+      </div> -->
       <h3>Defense</h3>
-      <div>
+      <div v-if="isArena">
         Health: <strong>{{ health }}</strong>
       </div>
+      <details v-else>
+        <summary>
+          Health: <strong>{{ health }}</strong>
+        </summary>
+        <div><strong>69</strong> from base hp</div>
+        <details>
+          <summary>
+            <strong>{{ totalDefense * 28 }}</strong> from defense
+          </summary>
+          <div>
+            <strong>{{ defense * 28 }}</strong> from defense stat
+          </div>
+          <div>
+            <strong>{{ weaponDefense * 28 }}</strong> from weapon defense
+          </div>
+          <div>
+            <strong>{{ petDefense * 28 }}</strong> from pet defense
+          </div>
+        </details>
+        <div>
+          <strong>{{ totalLevel * 3 }}</strong> from level
+        </div>
+      </details>
       <div>
         Resistance: <strong>{{ resistance }}</strong>
       </div>
       <div>
         Damage taken: <strong>{{ damageTaken }}%</strong>
       </div>
-      <div>
-        Run speed: <strong>x{{ runSpeed }}</strong>
-      </div>
+      <!-- <div>
+        Run speed: X<strong>{{ runSpeed.x }}</strong>,
+        Y<strong>{{ runSpeed.y }}</strong>
+      </div> -->
       <div>
         King Healing: <strong>{{ healing }}hp</strong>, {{ Math.ceil(health / healing) }} times for
         full health
@@ -241,21 +307,55 @@ rt m = magic
       <div v-if="isArena || magic >= 10">Air Projectile magic (JMH or JMU)</div>
       <div v-if="isArena || magic >= 15">Elemental Infusion (LLLH)</div>
       <div v-if="isArena || magic >= 20">Magic jump (MJ)</div>
+      <h3>Pet Damage</h3>
+      <div>
+        BiPolar Bear damage: <strong>&lt; 8% hp</strong> to enemies &amp; friends,
+        <strong>&lt; 12 hp</strong> to self
+      </div>
+      <div>Bitey Bat damage: <strong>?</strong></div>
+      <div>
+        Dragonhead damage: <strong>{{ Math.floor(magicDamage / 2) }}</strong>
+      </div>
+      <div>Hawkster damage: <strong>?</strong></div>
+      <div>Install Ball damage: <strong>5</strong></div>
+      <div>
+        Pelter damage: <strong>{{ magicDamage }}</strong>
+      </div>
+      <div>Rammy damage: <strong>?</strong></div>
+      <h3>Item Damage</h3>
+      <div>
+        Arrow damage: <strong>{{ arrowDamage }}</strong>
+      </div>
+      <!-- <div>
+        Arrow speed: X<strong>{{ arrowSpeed.x }}</strong>,
+        Y<strong>{{ arrowSpeed.y }}</strong>
+      </div> -->
+      <details v-if="!isArena">
+        <summary>
+          Shovel damage: <strong>{{ lightDamage + heavyDamage }}</strong>
+        </summary>
+        <div>
+          <strong>{{ lightDamage }}</strong> from first hit
+        </div>
+        <div>
+          <strong>{{ heavyDamage }}</strong> from second hit
+        </div>
+      </details>
+      <div v-if="!isArena">Boomerang damage: <strong>1</strong></div>
+      <div v-if="!isArena">
+        Horn damage: <strong>{{ throwDamage }}</strong>
+      </div>
+      <div v-if="!isArena">
+        Bomb damage: <strong>{{ bombDamage }}</strong>
+      </div>
       <h3>Other Damage</h3>
       <div>Spin attack damage: <strong>1</strong></div>
       <div v-if="!isArena">Fall damage: <strong>7</strong></div>
       <div v-if="!isArena">Wall damage: <strong>5</strong></div>
       <div v-if="!isArena">Domino damage: <strong>1</strong> + <strong>2</strong> * enemies</div>
       <div>Running mount damage: <strong>1</strong></div>
-      <div>Mount damage spit: <strong v-if="isArena">9</strong><strong v-else>?</strong></div>
-      <div>Mount damage snap: <strong v-if="isArena">9</strong><strong v-else>?</strong></div>
-      <div v-if="!isArena">
-        Shovel damage: <strong>{{ shovelDamage }}</strong>
-      </div>
-      <div v-if="!isArena">
-        Horn damage: <strong>{{ hornDamage }}</strong>
-      </div>
-      <div v-if="!isArena">Boomerang damage: <strong>1</strong></div>
+      <div>Mount damage spit: <strong v-if="isArena">9</strong><strong v-else>5</strong></div>
+      <div>Mount damage bite: <strong v-if="isArena">9</strong><strong v-else>?</strong></div>
     </div>
   </div>
 </template>
@@ -268,9 +368,9 @@ import weapons from './assets/weapons.js';
 import pets from './assets/pets.js';
 import calculateDamage from './scripts/calculateDamage.js';
 import { lightDamage, heavyDamage, throwDamage } from './scripts/damage.js';
-import { arrowDamage } from './scripts/agility.js';
-import { health, resistance } from './scripts/defense.js';
-import { magic, magicSustain } from './scripts/magic.js';
+import { arrowDamage, arrowSpeed, speed } from './scripts/agility.js';
+import { health, resistance, damageTaken } from './scripts/defense.js';
+import { magic, magicRegen, magicChain, magicSustain, magicSplash, magicHeal } from './scripts/magic.js';
 import parseCombo from './scripts/parseCombo.js';
 
 export default {
@@ -350,28 +450,28 @@ export default {
       return magic(this.totalLevel, this.totalMagic);
     },
     splashDamage() {
-      return Math.ceil(this.magicDamage * 0.5);
+      return magicSplash(this.magicDamage);
     },
     infusionDamage() {
       return this.lightDamage + this.magicDamage;
+    },
+    magicRegen() {
+      return magicRegen(this.totalMagic);
+    },
+    magicChain() {
+      return magicChain(this.totalMagic);
     },
     dotDamage() {
       return magicSustain(this.totalLevel, this.totalMagic);
     },
     healing() {
-      return Math.round(this.magicDamage * 0.25);
+      return magicHeal(this.magicDamage);
     },
     arrowDamage() {
       return arrowDamage(this.totalAgility);
     },
     bombDamage() {
       return (this.magicDamage < this.throwDamage ? this.throwDamage : this.magicDamage) * 2;
-    },
-    shovelDamage() {
-      return this.lightDamage + this.heavyDamage;
-    },
-    hornDamage() {
-      return this.throwDamage;
     },
     spendStatPoints() {
       return this.strength + this.magic + this.defense + this.agility - 4;
@@ -386,10 +486,14 @@ export default {
       return resistance(this.totalDefense);
     },
     damageTaken() {
-      return Math.round((2 * (1 - this.resistance / 100)).toFixed(2) * 100);
+      return damageTaken(this.resistance);
     },
     runSpeed() {
-      return Math.min(1 * (1 + this.totalAgility * 0.02), 1.5).toFixed(2);
+      // return Math.min(1 * (1 + this.totalAgility * 0.02), 1.5).toFixed(2);
+      return speed(this.totalAgility, this.isArena);
+    },
+    arrowSpeed() {
+      return arrowSpeed(this.totalAgility);
     },
     experience() {
       return this.level === 1 ? 0 : ((this.level - 1) * ((this.level - 2) * 20 + 380)) / 2 + 1;
@@ -428,7 +532,7 @@ export default {
         'Bomb',
         'Shovel',
         'Horn',
-        'Combo',
+        'Combo (experimental)',
       ],
     };
   },
@@ -513,9 +617,9 @@ ${
       if (this.enemyHits === 'Throw') return [this.throwDamage];
       if (this.enemyHits === 'Arrow') return [this.arrowDamage];
       if (this.enemyHits === 'Bomb') return [this.bombDamage];
-      if (this.enemyHits === 'Shovel') return [this.shovelDamage];
-      if (this.enemyHits === 'Horn') return [this.hornDamage];
-      if (this.enemyHits === 'Combo') return this.comboDamage ?? [];
+      if (this.enemyHits === 'Shovel') return [this.lightDamage + this.heavyDamage];
+      if (this.enemyHits === 'Horn') return [this.throwDamage];
+      if (this.enemyHits === 'Combo (experimental)') return this.comboDamage ?? [];
       return [this.lightDamage];
     },
     updateStats() {
@@ -560,6 +664,11 @@ body {
   font-size: 16px;
   box-sizing: border-box;
   /* overflow: hidden; */
+}
+
+details > div,
+details > details {
+  margin-left: 16px;
 }
 
 * {

@@ -17,3 +17,11 @@ export function magicChain(magic) {
 export function magicSustain(level, magic) {
   return Math.floor(3 + 0.1 * level + magic * 0.4);
 }
+
+export function magicSplash(magicDamage) {
+  return Math.ceil(magicDamage * 0.5);
+}
+
+export function magicHeal(magicDamage) {
+  return Math.round(magicDamage * 0.25);
+}

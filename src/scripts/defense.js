@@ -5,3 +5,7 @@ export function health(level, defense) {
 export function resistance(defense) {
   return 40 + defense / 2;
 }
+
+export function damageTaken(resistance) {
+  return Math.round((2 * (1 - resistance / 100)).toFixed(2) * 100);
+}
