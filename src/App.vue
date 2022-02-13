@@ -2,14 +2,10 @@
   <div class="container">
     <div class="input">
       <div class="game">
-        <h3>Game</h3>
+        <h3>Game version</h3>
         <label>
-          <span>Castle Crashers Remastered</span>
-          <input type="radio" v-model="OG" :value="false" @change="updateStats" />
-        </label>
-        <label>
-          <span> Castle Crashers</span>
-          <input type="radio" v-model="OG" :value="true" @change="updateStats" />
+          <span>Castle Crashers<span v-if="remastered"> Remastered</span></span>
+          <input type="checkbox" v-model="remastered" @change="updateStats" />
         </label>
       </div>
       <div class="modes">
@@ -29,30 +25,32 @@
       </div>
       <div class="players">
         <h3>Number of players</h3>
-        <StatBar v-model="numPlayers" @change="updateStats" length="4"></StatBar>
+        <StatBar v-model="numPlayers" @change="updateStats" :length="4"></StatBar>
       </div>
       <div class="stats" v-if="!isArena">
-        <h3>Stats</h3>
-        <label>
-          <span>Level</span>
-          <div>
-            <input
-              type="number"
-              v-model.number="level"
-              value="99"
-              min="1"
-              max="99"
-              @change="updateStats"
-            />
+        <h3>Level</h3>
+        <div>
+          <label>
+            <input type="number" v-model.number="level" min="1" max="99" @change="updateStats" />
+          </label>
+          <div class="quick-select">
+            <small>Quick select</small>
+            <button @click="level = 1">1</button>
+            <button @click="level = 13">13</button>
+            <button @click="level = 30">30</button>
+            <button @click="level = 54">54</button>
+            <button @click="level = 78">78</button>
+            <button @click="level = 99">99</button>
           </div>
-        </label>
+        </div>
+        <h3>Stats</h3>
         <div>
           <span>Strength</span>
           <StatBar v-model="strength" @change="updateStats"></StatBar>
         </div>
         <div>
           <span>Magic</span>
-          <StatBar v-model="magic" @change="updateStats" interval="5"></StatBar>
+          <StatBar v-model="magic" @change="updateStats" :interval="5"></StatBar>
         </div>
         <div>
           <span>Defense</span>
@@ -141,16 +139,18 @@ rt m = magic
         </div>
       </div>
       <h3>Stats total</h3>
+      <div>
+        Level: <strong>{{ totalLevel }}</strong>
+      </div>
       <div v-if="!isArena">
         Exp: <strong>{{ experience }}</strong>
       </div>
-      <div v-else>Level: <strong>30</strong></div>
       <details>
         <summary>
           Strength: <strong>{{ totalStrength + extraLevel }}</strong>
         </summary>
         <div>
-          <strong>{{ strength }}</strong> from stat
+          <strong>{{ statStrength }}</strong> from stat
         </div>
         <div>
           <strong>{{ weaponStrength }}</strong> from weapon
@@ -167,7 +167,7 @@ rt m = magic
           Magic: <strong>{{ totalMagic + extraLevel }}</strong>
         </summary>
         <div>
-          <strong>{{ magic }}</strong> from stat
+          <strong>{{ statMagic }}</strong> from stat
         </div>
         <div>
           <strong>{{ weaponMagic }}</strong> from weapon
@@ -184,7 +184,7 @@ rt m = magic
           Defense: <strong>{{ totalDefense }}</strong>
         </summary>
         <div>
-          <strong>{{ defense }}</strong> from stat
+          <strong>{{ statDefense }}</strong> from stat
         </div>
         <div>
           <strong>{{ weaponDefense }}</strong> from weapon
@@ -198,7 +198,7 @@ rt m = magic
           Agility: <strong>{{ totalAgility }}</strong>
         </summary>
         <div>
-          <strong>{{ agility }}</strong> from stat
+          <strong>{{ statAgility }}</strong> from stat
         </div>
         <div>
           <strong>{{ weaponAgility }}</strong> from weapon
@@ -210,15 +210,21 @@ rt m = magic
       <h3>Melee damage</h3>
       <div>
         Light attack damage: <strong>{{ lightDamage }}</strong>
-        <span v-if="doCrit">, critical <strong>{{ lightDamage * 4 }}</strong></span>
+        <span v-if="doCrit"
+          >, critical <strong>{{ lightDamage * 4 }}</strong>
+        </span>
       </div>
       <div>
         Heavy attack damage: <strong>{{ heavyDamage }}</strong>
-        <span v-if="doCrit">, critical <strong>{{ heavyDamage * 4 }}</strong></span>
+        <span v-if="doCrit"
+          >, critical <strong>{{ heavyDamage * 4 }}</strong>
+        </span>
       </div>
       <div>
         Throw damage: <strong>{{ throwDamage }}</strong>
-        <span v-if="doCrit">, critical <strong>{{ throwDamage * 4 }}</strong></span>
+        <span v-if="doCrit"
+          >, critical <strong>{{ throwDamage * 4 }}</strong>
+        </span>
       </div>
       <div v-if="totalComboDamage">
         Combo damage: <strong>{{ totalComboDamage }}</strong>
@@ -263,7 +269,7 @@ rt m = magic
             <strong>{{ totalDefense * 28 }}</strong> from defense
           </summary>
           <div>
-            <strong>{{ defense * 28 }}</strong> from defense stat
+            <strong>{{ statDefense * 28 }}</strong> from defense stat
           </div>
           <div>
             <strong>{{ weaponDefense * 28 }}</strong> from weapon defense
@@ -283,12 +289,14 @@ rt m = magic
         Damage taken: <strong>{{ damageTaken }}%</strong>
       </div>
       <!-- <div>
-        Run speed: X<strong>{{ runSpeed.x }}</strong>,
-        Y<strong>{{ runSpeed.y }}</strong>
+        Run speed: X
+        <strong>{{ runSpeed.x }}</strong
+        >, Y
+        <strong>{{ runSpeed.y }}</strong>
       </div> -->
       <div>
-        King Healing: <strong>{{ healing }}hp</strong>, {{ Math.ceil(health / healing) }} times for
-        full health
+        King Healing:
+        <strong>{{ healing }}hp</strong>, {{ Math.ceil(health / healing) }} times for full health
       </div>
       <h3>Enemy hits</h3>
       <div class="text_output" v-html="output"></div>
@@ -370,7 +378,14 @@ import calculateDamage from './scripts/calculateDamage.js';
 import { lightDamage, heavyDamage, throwDamage } from './scripts/damage.js';
 import { arrowDamage, arrowSpeed, speed } from './scripts/agility.js';
 import { health, resistance, damageTaken } from './scripts/defense.js';
-import { magic, magicRegen, magicChain, magicSustain, magicSplash, magicHeal } from './scripts/magic.js';
+import {
+  magic,
+  magicRegen,
+  magicChain,
+  magicSustain,
+  magicSplash,
+  magicHeal,
+} from './scripts/magic.js';
 import parseCombo from './scripts/parseCombo.js';
 
 export default {
@@ -379,60 +394,71 @@ export default {
     StatBar,
   },
   computed: {
+    isOG() {
+      return !this.remastered;
+    },
     isArena() {
       return this.mode === 3;
     },
+    statStrength() {
+      return this.isArena ? arena.Strength : this.strength || 1;
+    },
+    statMagic() {
+      return this.isArena ? arena.Magic : this.magic || 1;
+    },
+    statDefense() {
+      return this.isArena ? arena.Defense : this.defense || 1;
+    },
+    statAgility() {
+      return this.isArena ? arena.Agility : this.agility || 1;
+    },
     weaponStrength() {
       return (
-        (this.OG ? this.weapon?.ccStrength ?? this.weapon?.strength : this.weapon?.strength) ?? 0
+        (this.isOG ? this.weapon?.ccStrength ?? this.weapon?.strength : this.weapon?.strength) ?? 0
       );
     },
     weaponMagic() {
-      return (this.OG ? this.weapon?.ccMagic ?? this.weapon?.magic : this.weapon?.magic) ?? 0;
+      return (this.isOG ? this.weapon?.ccMagic ?? this.weapon?.magic : this.weapon?.magic) ?? 0;
     },
     weaponDefense() {
-      return (this.OG ? this.weapon?.ccDefense ?? this.weapon?.defense : this.weapon?.defense) ?? 0;
+      return (
+        (this.isOG ? this.weapon?.ccDefense ?? this.weapon?.defense : this.weapon?.defense) ?? 0
+      );
     },
     weaponAgility() {
-      return (this.OG ? this.weapon?.ccAgility ?? this.weapon?.agility : this.weapon?.agility) ?? 0;
+      return (
+        (this.isOG ? this.weapon?.ccAgility ?? this.weapon?.agility : this.weapon?.agility) ?? 0
+      );
     },
     weaponCrit() {
-      return (this.OG ? this.weapon?.ccCrit ?? this.weapon?.crit : this.weapon?.crit) ?? 0;
+      return (this.isOG ? this.weapon?.ccCrit ?? this.weapon?.crit : this.weapon?.crit) ?? 0;
     },
     petStrength() {
-      return (this.OG ? this.pet?.ccStrength ?? this.pet?.strength : this.pet?.strength) ?? 0;
+      return (this.isOG ? this.pet?.ccStrength ?? this.pet?.strength : this.pet?.strength) ?? 0;
     },
     petMagic() {
-      return (this.OG ? this.pet?.ccMagic ?? this.pet?.magic : this.pet?.magic) ?? 0;
+      return (this.isOG ? this.pet?.ccMagic ?? this.pet?.magic : this.pet?.magic) ?? 0;
     },
     petDefense() {
-      return (this.OG ? this.pet?.ccDefense ?? this.pet?.defense : this.pet?.defense) ?? 0;
+      return (this.isOG ? this.pet?.ccDefense ?? this.pet?.defense : this.pet?.defense) ?? 0;
     },
     petAgility() {
-      return (this.OG ? this.pet?.ccAgility ?? this.pet?.agility : this.pet?.agility) ?? 0;
+      return (this.isOG ? this.pet?.ccAgility ?? this.pet?.agility : this.pet?.agility) ?? 0;
     },
     totalLevel() {
       return this.isArena ? arena.Level : this.level;
     },
     totalStrength() {
-      return (
-        (this.isArena ? arena.Strength : this.strength || 1) +
-        this.weaponStrength +
-        this.petStrength
-      );
+      return this.statStrength + this.weaponStrength + this.petStrength;
     },
     totalMagic() {
-      return (this.isArena ? arena.Magic : this.magic || 1) + this.weaponMagic + this.petMagic;
+      return this.statMagic + this.weaponMagic + this.petMagic;
     },
     totalDefense() {
-      return (
-        (this.isArena ? arena.Defense : this.defense || 1) + this.weaponDefense + this.petDefense
-      );
+      return this.statDefense + this.weaponDefense + this.petDefense;
     },
     totalAgility() {
-      return (
-        (this.isArena ? arena.Agility : this.agility || 1) + this.weaponAgility + this.petAgility
-      );
+      return this.statAgility + this.weaponAgility + this.petAgility;
     },
     extraLevel() {
       return Math.floor(this.totalLevel * 0.1);
@@ -504,7 +530,7 @@ export default {
   },
   data() {
     return {
-      OG: false,
+      remastered: true,
       mode: 1,
       numPlayers: 1,
       level: 1,
@@ -568,7 +594,7 @@ ${
       const urlParams = new URLSearchParams(window.location.search);
 
       const og = urlParams.get('OG');
-      if (og) this.OG = true;
+      if (og) this.remastered = false;
       const mode = urlParams.get('mode');
       if (mode) this.mode = parseInt(mode, 10);
       const num = urlParams.get('players');
@@ -594,7 +620,7 @@ ${
     },
     setUrloptions() {
       const urlParams = new URLSearchParams();
-      if (this.OG) urlParams.set('OG', 1);
+      if (!this.remastered) urlParams.set('OG', 1);
       if (this.mode > 1) urlParams.set('mode', this.mode);
       if (this.numPlayers > 1) urlParams.set('players', this.numPlayers);
       if (this.level > 1) urlParams.set('lvl', this.level);
@@ -617,7 +643,7 @@ ${
       if (this.enemyHits === 'Throw') return [this.throwDamage];
       if (this.enemyHits === 'Arrow') return [this.arrowDamage];
       if (this.enemyHits === 'Bomb') return [this.bombDamage];
-      if (this.enemyHits === 'Shovel') return [this.lightDamage + this.heavyDamage];
+      if (this.enemyHits === 'Shovel') return [this.lightDamage, this.heavyDamage];
       if (this.enemyHits === 'Horn') return [this.throwDamage];
       if (this.enemyHits === 'Combo (experimental)') return this.comboDamage ?? [];
       return [this.lightDamage];
@@ -721,5 +747,9 @@ details > details {
   .output {
     overflow-y: auto;
   }
+}
+
+.quick-select > * {
+  margin-right: 4px;
 }
 </style>

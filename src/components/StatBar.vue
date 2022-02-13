@@ -4,7 +4,11 @@
       <div
         v-for="item in stats"
         :key="item"
-        :class="{ stat: true, lit: item <= actualValue, interval: item < length && item % interval === 0 }"
+        :class="{
+          stat: true,
+          lit: item <= actualValue,
+          interval: item < length && item % interval === 0,
+        }"
         @click="changed(item)"
         @mouseenter="mouseEnter(item)"
         @mouseleave="mouseLeave(actualValue)"
