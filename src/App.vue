@@ -63,16 +63,21 @@
       </div>
       <div class="weapons">
         <h3>Weapon</h3>
-        <select v-model="weapon" @change="updateStats">
-          <option v-for="w in weapons" :value="w" :key="w.name">
+        <select v-model="weaponName" @change="updateStats">
+          <option v-for="w in weapons" :value="w.name" :key="w.name">
             {{ w.name }}
           </option>
         </select>
+        <span v-if="weaponLevel">level:{{ weaponLevel }}</span>
         <span v-if="weaponStrength">strength:{{ weaponStrength }}</span>
         <span v-if="weaponMagic">magic:{{ weaponMagic }}</span>
         <span v-if="weaponDefense">defense:{{ weaponDefense }}</span>
         <span v-if="weaponAgility">agility:{{ weaponAgility }}</span>
-        <span v-if="weaponCrit">crit:{{ weaponCrit }}%</span>
+        <span v-if="weaponElectric">electric:{{ weaponElectric }}%</span>
+        <span v-if="weaponFire">fire:{{ weaponFire }}%</span>
+        <span v-if="weaponPoison">poison:{{ weaponPoison }}%</span>
+        <span v-if="weaponIce">ice:{{ weaponIce }}%</span>
+        <span v-if="weaponCrit">critical:{{ weaponCrit }}%</span>
         <div v-if="weaponCrit">
           Apply critical strike:
           <label>
@@ -91,8 +96,8 @@
       </div>
       <div class="pets">
         <h3>Animal Orb</h3>
-        <select v-model="pet" @change="updateStats">
-          <option v-for="p in pets" :value="p" :key="p.name">
+        <select v-model="petName" @change="updateStats">
+          <option v-for="p in pets" :value="p.name" :key="p.name">
             {{ p.name }}
           </option>
         </select>
@@ -372,8 +377,10 @@ rt m = magic
 import StatBar from './components/StatBar';
 import { formatEnemies, formatEnemyHits } from './scripts/formatStats.js';
 import arena from './assets/arena.js';
-import weapons from './assets/weapons.js';
-import pets from './assets/pets.js';
+import weaponsOG from './assets/weapons.js';
+import weaponsRemastered from './assets/weapons_remastered.js';
+import petsOG from './assets/pets.js';
+import petsRemastered from './assets/pets_remastered.js';
 import calculateDamage from './scripts/calculateDamage.js';
 import { lightDamage, heavyDamage, throwDamage } from './scripts/damage.js';
 import { arrowDamage, arrowSpeed, speed } from './scripts/agility.js';
@@ -412,38 +419,59 @@ export default {
     statAgility() {
       return this.isArena ? arena.Agility : this.agility || 1;
     },
+    weapons() {
+      return this.isOG ? weaponsOG : weaponsRemastered;
+    },
+    weapon() {
+      return this.weapons.find(x => x.name === this.weaponName);
+    },
+    weaponLevel() {
+      return this.weapon?.level ?? 1;
+    },
     weaponStrength() {
-      return (
-        (this.isOG ? this.weapon?.ccStrength ?? this.weapon?.strength : this.weapon?.strength) ?? 0
-      );
+      return this.weapon?.strength ?? 0;
     },
     weaponMagic() {
-      return (this.isOG ? this.weapon?.ccMagic ?? this.weapon?.magic : this.weapon?.magic) ?? 0;
+      return this.weapon?.magic ?? 0;
     },
     weaponDefense() {
-      return (
-        (this.isOG ? this.weapon?.ccDefense ?? this.weapon?.defense : this.weapon?.defense) ?? 0
-      );
+      return this.weapon?.defense ?? 0;
     },
     weaponAgility() {
-      return (
-        (this.isOG ? this.weapon?.ccAgility ?? this.weapon?.agility : this.weapon?.agility) ?? 0
-      );
+      return this.weapon?.agility ?? 0;
     },
     weaponCrit() {
-      return (this.isOG ? this.weapon?.ccCrit ?? this.weapon?.crit : this.weapon?.crit) ?? 0;
+      return this.weapon?.critical ?? 0;
+    },
+    weaponElectric() {
+      return this.weapon?.electric ?? 0;
+    },
+    weaponFire() {
+      return this.weapon?.fire ?? 0;
+    },
+    weaponPoison() {
+      return this.weapon?.poison ?? 0;
+    },
+    weaponIce() {
+      return this.weapon?.ice ?? 0;
+    },
+    pets() {
+      return this.isOG ? petsOG : petsRemastered;
+    },
+    pet() {
+      return this.pets.find(x => x.name === this.petName);
     },
     petStrength() {
-      return (this.isOG ? this.pet?.ccStrength ?? this.pet?.strength : this.pet?.strength) ?? 0;
+      return this.pet?.strength ?? 0;
     },
     petMagic() {
-      return (this.isOG ? this.pet?.ccMagic ?? this.pet?.magic : this.pet?.magic) ?? 0;
+      return this.pet?.magic ?? 0;
     },
     petDefense() {
-      return (this.isOG ? this.pet?.ccDefense ?? this.pet?.defense : this.pet?.defense) ?? 0;
+      return this.pet?.defense ?? 0;
     },
     petAgility() {
-      return (this.isOG ? this.pet?.ccAgility ?? this.pet?.agility : this.pet?.agility) ?? 0;
+      return this.pet?.agility ?? 0;
     },
     totalLevel() {
       return this.isArena ? arena.Level : this.level;
@@ -539,12 +567,8 @@ export default {
       defense: 1,
       agility: 1,
       combo: 'j hhll',
-      defaultWeapon: 'Alien Gun',
-      weapon: {},
-      weapons,
-      defaultPet: 'None',
-      pet: {},
-      pets,
+      weaponName: 'Alien Gun',
+      petName: 'None',
       comboDamage: [],
       output: '',
       doCrit: 0,
@@ -610,11 +634,11 @@ ${
       const agi = urlParams.get('agi');
       if (agi) this.agility = parseInt(agi, 10);
       const weap = urlParams.get('weap');
-      if (weap) this.defaultWeapon = weap;
+      if (weap) this.weaponName = weap;
       const crit = urlParams.get('crit');
       if (crit) this.doCrit = crit;
       const orb = urlParams.get('orb');
-      if (orb) this.defaultPet = orb;
+      if (orb) this.petName = orb;
       const combo = urlParams.get('combo');
       if (combo) this.combo = combo;
     },
@@ -649,7 +673,7 @@ ${
       return [this.lightDamage];
     },
     updateStats() {
-      if (!this.weapon?.crit) this.doCrit = 0;
+      if (!this.weapon?.critical) this.doCrit = 0;
       this.comboDamage = parseCombo(
         this.combo,
         this.lightDamage,
@@ -675,8 +699,6 @@ ${
   },
   mounted() {
     this.getUrlOptions();
-    this.weapon = weapons.find(x => x.name === this.defaultWeapon);
-    this.pet = pets.find(x => x.name === this.defaultPet);
     this.updateStats();
   },
 };
