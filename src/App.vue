@@ -325,16 +325,21 @@ rt m = magic
         BiPolar Bear damage: <strong>&lt; 8% hp</strong> to enemies &amp; friends,
         <strong>&lt; 12 hp</strong> to self
       </div>
-      <div>Bitey Bat damage: <strong>?</strong></div>
+      <div>Bitey Bat damage: <strong v-if="isArena">4</strong><strong v-else>1</strong></div>
       <div>
         Dragonhead damage: <strong>{{ Math.floor(magicDamage / 2) }}</strong>
       </div>
-      <div>Hawkster damage: <strong>?</strong></div>
+      <div>Hawkster damage: <strong>1</strong> (1-4 times)</div>
       <div>Install Ball damage: <strong>5</strong></div>
       <div>
         Pelter damage: <strong>{{ magicDamage }}</strong>
       </div>
-      <div>Rammy damage: <strong>?</strong></div>
+      <div>
+        Rammy damage: <strong>5</strong
+        ><span v-if="doCrit"
+          >, critical <strong>{{ 20 }}</strong>
+        </span>
+      </div>
       <h3>Item Damage</h3>
       <div>
         Arrow damage: <strong>{{ arrowDamage }}</strong>
@@ -367,8 +372,8 @@ rt m = magic
       <div v-if="!isArena">Wall damage: <strong>5</strong></div>
       <div v-if="!isArena">Domino damage: <strong>1</strong> + <strong>2</strong> * enemies</div>
       <div>Running mount damage: <strong>1</strong></div>
-      <div>Mount damage spit: <strong v-if="isArena">9</strong><strong v-else>5</strong></div>
-      <div>Mount damage bite: <strong v-if="isArena">9</strong><strong v-else>?</strong></div>
+      <div>Mount damage spit: <strong v-if="isArena">5-6</strong><strong v-else>4</strong></div>
+      <div>Mount damage bite: <strong v-if="isArena">10-12</strong><strong v-else>10</strong></div>
     </div>
   </div>
 </template>
